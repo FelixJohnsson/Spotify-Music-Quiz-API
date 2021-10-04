@@ -1,5 +1,5 @@
 const debug = require('./debugging.js')
-const database = require('./Database/database.js')
+const DB_users = require('./Database/users.js')
 
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -36,27 +36,177 @@ const server = app.listen(process.env.PORT, () => {
 
 interface New_user {
 	username:string,
+	id:string,
     password:string,
     latest_login_string:string,
 	latest_login_number: number,
     login_token:string,
     played_playlists:string[],
-	uuid:number
+	uuid:string
 }
 
 app.post('/add_user', (req:any, res:any) => {
 	const new_date = new Date;
 	let new_user:New_user = {
 		username: req.body.username,
-		password: hashPassword(),
+		id:req.body.username,
+		password: '213abc!',//getHashedPassword(),
 		latest_login_number: Date.now(),
 		latest_login_string: new_date.toDateString(),
-		login_token: getLoginToken(),
+		login_token: '123abc123',//getLoginToken(),
 		played_playlists: [],
-		uuid: uuid4(),
+		uuid: '1234' //uuid4(),
 	}
-	database.add_new_user(new_user)
+	DB_users.add_new_user(new_user)
 	.then(data => res.send({data}))
 	
 	debug.print_general_status(`Added user ${new_user.username}`);
+});
+app.get('/get_user/:id', (req:any, res:any) => {
+
+	DB_users.get_user_by_id(req.params.id)
+	.then(data => {
+		res.send({data});
+		debug.print_general_status(`Found user ${req.params.id}`);
+	})
+});
+
+
+
+
+
+
+
+const spotify = require('./spotify_functions.js')
+// SPOTIFY - Functions
+const client_id = '94ac88d39834494da4f490e1b0cb0ef2'; // Your client id
+const client_secret = '9b029b88d0364f1590456f0e2f11dd5c'; // Your secret
+const redirect_uri = 'http://localhost:5000/callback'; // Your redirect uri
+const stateKey = 'spotify_auth_state';
+
+app.get('/login', function (req: Request, res:any) {
+
+	const state = spotify.generateRandomString(16);
+	res.cookie(stateKey, state);
+
+	// your application requests authorization
+	const scope = `playlist-modify-public 
+				   playlist-modify-private 
+				   playlist-read-private 
+				   playlist-read-collaborative
+				   user-library-modify
+				   user-library-read
+				   app-remote-control
+				   user-read-currently-playing
+				   user-modify-playback-state
+				   user-read-playback-state
+				   user-read-recently-played
+				   user-top-read
+				   user-read-playback-position`;
+
+	res.redirect('https://accounts.spotify.com/authorize?' +
+		querystring.stringify({
+			response_type: 'code',
+			client_id: client_id,
+			scope: scope,
+			redirect_uri: redirect_uri,
+			state: state
+		}));
+});
+
+
+app.get('/callback', (req:any, res:any):void => {
+
+	// your application requests refresh and access tokens
+	// after checking the state parameter
+
+	var code = req.query.code || null;
+	var state = req.query.state || null;
+	var storedState = req.cookies ? req.cookies[stateKey] : null;
+
+	if (state === null || state !== storedState) {
+		res.redirect('/#' +
+			querystring.stringify({
+				error: 'state_mismatch'
+			}));
+	} else {
+		res.clearCookie(stateKey);
+		var authOptions = {
+			url: 'https://accounts.spotify.com/api/token',
+			form: {
+				code: code,
+				redirect_uri: redirect_uri,
+				grant_type: 'authorization_code'
+			},
+			headers: {
+				// @ts-ignore  ??? - Only a void function can be called with the 'new' keyword.
+				'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64')) 
+			},
+			json: true
+		};
+
+		request.post(authOptions, function (error:any, response:any, body:any) {
+			if (!error && response.statusCode === 200) {
+
+				var access_token = body.access_token,
+				refresh_token = body.refresh_token;
+
+			
+				// we can also pass the token to the browser to make requests from there
+				request("https://api.spotify.com/v1/me", {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: "Bearer " + access_token,
+                        "Content-Type": "application/json"
+                    }
+                })
+                    .on('response', (data) => {
+                    res.redirect('/logged_in/' +
+                        querystring.stringify({
+                            access_token: access_token,
+                            refresh_token: refresh_token,
+                            id: data.id,
+                            username: data.display_name
+                        }));
+                    debug.print_success_login('User successfully logged in');
+					})
+			} else {
+				res.redirect('/#' +
+					querystring.stringify({
+						error: 'invalid_token'
+					}));
+					debug.print_error_login('User unsuccessfully logged in.' + {error: 'Invalid token.'});
+			}
+		});
+	}
+});
+
+app.get('/refresh_token/:token', function (req:any, res:any) {
+
+	// requesting access token from refresh token
+	var refresh_token = req.params.token;
+	var authOptions = {
+		url: 'https://accounts.spotify.com/api/token',
+		headers: {
+			//@ts-ignore
+			'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64'))
+		},
+		form: {
+			grant_type: 'refresh_token',
+			refresh_token: refresh_token
+		},
+		json: true
+	};
+
+	request.post(authOptions, function (error:String, response:any, body:any) {
+			if (!error && response.statusCode === 200) {
+				var access_token = body.access_token;
+				res.send({
+					'access_token': access_token
+				});
+			} else {
+				res.send(response)
+			}
+		})
+
 });
