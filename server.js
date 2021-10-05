@@ -29,7 +29,7 @@ var server = app.listen(process.env.PORT, function () {
     debug.print_success_status('Connected to: ' + process.env.PORT);
 });
 app.post('/add_user', function (req, res) {
-    if (req.body.username != undefined) {
+    if (req.body.username != undefined && req.body.username.length > 0) {
         DB_users.init_user(req.body.username, req.body.id, uuid_v4())
             .then(function (data) {
             res.send({ data: data });
@@ -37,9 +37,13 @@ app.post('/add_user', function (req, res) {
         });
     }
     else {
-        res.send({ error: "Couldn't add user, insufficient data reievied." });
+        var error_object = {
+            statusCode: 400,
+            error_message: "Couldn't add user, insufficient data reievied.",
+            content: {}
+        };
+        res.send(error_object);
         debug.print_error_status("Failed to add user.");
-        debug.print_line('Failed to add user.');
     }
 });
 app.get('/get_user/:id', function (req, res) {

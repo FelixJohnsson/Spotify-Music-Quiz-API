@@ -35,6 +35,7 @@ const server = app.listen(process.env.PORT, () => {
 	debug.print_success_status('Connected to: ' + process.env.PORT);
 });
 
+
 interface New_user {
 	username:string,
 	id:string,
@@ -45,18 +46,27 @@ interface New_user {
     played_playlists:string[],
 	uuid:string
 }
+interface Error_object {
+	statusCode:Number,
+	error_message:String,
+	content:Object,
+}
 
 app.post('/add_user', (req:any, res:any) => {
-	if(req.body.username != undefined){
+	if(req.body.username != undefined && req.body.username.length > 0){
 		DB_users.init_user(req.body.username,  req.body.id, uuid_v4())
 		.then(data => {
 			res.send({data})
 			debug.print_success_status(`Added user ${data.username}`);
 		})
 	} else {
-		res.send({error:"Couldn't add user, insufficient data reievied."})
+		let error_object:Error_object = {
+			statusCode: 400,
+			error_message: "Couldn't add user, insufficient data reievied.",
+			content:{}
+		}
+		res.send(error_object)
 		debug.print_error_status(`Failed to add user.`);
-		debug.print_line('Failed to add user.')
 	}
 
 });
