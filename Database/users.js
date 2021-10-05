@@ -92,7 +92,102 @@ var get_user_by_id = function (id) { return __awaiter(_this, void 0, void 0, fun
             })];
     });
 }); };
+var update_user = function (id, type, value) { return __awaiter(_this, void 0, void 0, function () {
+    var filter, update;
+    return __generator(this, function (_a) {
+        switch (type) {
+            case 'delete':
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        user_model.deleteOne({ id: id }, function (error, success) {
+                            if (error)
+                                reject(error);
+                            if (success)
+                                resolve(success);
+                        });
+                    })];
+            case 'login':
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        filter = { id: id };
+                        update = { $set: { latest_connection: Date.now(), oAuth: value } };
+                        user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, function (error, success) {
+                            if (error)
+                                reject(error);
+                            if (success)
+                                resolve(success);
+                        });
+                    })];
+            case 'join_room':
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        filter = { id: id };
+                        update = { $push: { played_playlists: value }, $set: { latest_connection: Date.now() } };
+                        user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, function (error, success) {
+                            if (error)
+                                reject(error);
+                            if (success)
+                                resolve(success);
+                        });
+                    })];
+            case 'correct_guess':
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        filter = { id: id };
+                        update = { $inc: { correct_guesses: value } };
+                        user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, function (error, success) {
+                            if (error)
+                                reject(error);
+                            if (success)
+                                resolve(success);
+                        });
+                    })];
+            case 'incorrect_guess':
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        filter = { id: id };
+                        update = { $inc: { incorrect_guesses: value } };
+                        user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, function (error, success) {
+                            if (error)
+                                reject(error);
+                            if (success)
+                                resolve(success);
+                        });
+                    })];
+            case 'rooms_won':
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        filter = { id: id };
+                        update = { $inc: { rooms_won: 1 } };
+                        user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, function (error, success) {
+                            if (error)
+                                reject(error);
+                            if (success)
+                                resolve(success);
+                        });
+                    })];
+            case 'rooms_lost':
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        filter = { id: id };
+                        update = { $inc: { rooms_lost: 1 } };
+                        user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, function (error, success) {
+                            if (error)
+                                reject(error);
+                            if (success)
+                                resolve(success);
+                        });
+                    })];
+            case 'new_badge':
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        filter = { id: id };
+                        update = { $inc: { number_of_badges: 1 }, $push: { badges: value } };
+                        user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, function (error, success) {
+                            if (error)
+                                reject(error);
+                            if (success)
+                                resolve(success);
+                        });
+                    })];
+        }
+        return [2 /*return*/];
+    });
+}); };
 module.exports = {
     init_user: init_user,
-    get_user_by_id: get_user_by_id
+    get_user_by_id: get_user_by_id,
+    update_user: update_user
 };

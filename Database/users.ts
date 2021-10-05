@@ -44,6 +44,7 @@ const init_user = async (id: String, username:String, oAuth:String) => {
     })
 
 }
+
 const get_user_by_id = async (id: string) => {
     return new Promise((resolve, reject) => {
         user_model.find({username:id}, (error:any, success:any) => {
@@ -53,9 +54,93 @@ const get_user_by_id = async (id: string) => {
     })
 }
 
+const update_user = async (id:String, type:String, value?: String | Number) => {
+    let filter;
+    let update;
+    switch(type){
+        case 'delete': 
+            return new Promise((resolve, reject) => {
+                user_model.deleteOne({ id: id }, (error: any, success:any) => {
+                    if(error) reject(error);
+                    if(success) resolve(success);
+                  });
+            })
+        case 'login':
+            return new Promise((resolve, reject) => {
+                filter = { id: id };
+                update = { $set:{latest_connection: Date.now(), oAuth: value}};
+    
+                user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
+                    if(error) reject(error);
+                    if(success) resolve(success);
+                }); 
+            })
+        case 'join_room':
+            return new Promise((resolve, reject) => {
+            filter = { id: id };
+            update = { $push: {played_playlists: value}, $set:{latest_connection: Date.now()}};
+    
+            user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
+                if(error) reject(error);
+                if(success) resolve(success);
+            }); 
+        })
+        case 'correct_guess':
+            return new Promise((resolve, reject) => {
+            filter = { id: id };
+            update = { $inc: {correct_guesses: value}};
+            
+            user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
+                if(error) reject(error);
+                if(success) resolve(success);
+            }); 
+        })
+        case 'incorrect_guess':
+            return new Promise((resolve, reject) => {
+            filter = { id: id };
+            update = { $inc: {incorrect_guesses: value}};
+    
+            user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
+                if(error) reject(error);
+                if(success) resolve(success);
+            }); 
+        })
+        case 'rooms_won':
+            return new Promise((resolve, reject) => {
+            filter = { id: id };
+            update = { $inc: {rooms_won: 1}};
+    
+            user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
+                if(error) reject(error);
+                if(success) resolve(success);
+            }); 
+        })
+        case 'rooms_lost':
+            return new Promise((resolve, reject) => {
+            filter = { id: id };
+            update = { $inc: {rooms_lost: 1}};
+    
+            user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
+                if(error) reject(error);
+                if(success) resolve(success);
+            }); 
+        })
+        case 'new_badge':
+            return new Promise((resolve, reject) => {
+            filter = { id: id };
+            update = { $inc: {number_of_badges: 1}, $push: {badges: value}};
+    
+            user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
+                if(error) reject(error);
+                if(success) resolve(success);
+            }); 
+        })
+    }
+}
 
 
 module.exports = {
     init_user, 
-    get_user_by_id
+    get_user_by_id,
+    update_user
 }
