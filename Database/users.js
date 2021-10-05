@@ -40,30 +40,46 @@ var mongoose = require('mongoose');
 var user_schema = new mongoose.Schema({
     username: String,
     id: String,
-    password: String,
-    latest_login: String,
-    login_token: String,
-    played_playlists: Array
+    socket: String,
+    latest_connection: String,
+    first_connection: String,
+    played_playlists: Array,
+    number_of_badges: Number,
+    badges: Array,
+    correct_guesses: Number,
+    incorrect_guesses: Number,
+    rooms_won: Number,
+    rooms_lost: Number,
+    oAuth: String
 });
 var user_model = mongoose.model('users', user_schema);
-var add_new_user = function (user_object) {
-    var new_user = new user_model({
-        username: user_object.username,
-        id: user_object.id,
-        password: user_object.password,
-        latest_login: user_object.latest_login,
-        login_token: user_object.login_token,
-        played_playlists: user_object.played_playlists
+var init_user = function (id, username, oAuth) { return __awaiter(_this, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        return [2 /*return*/, new Promise(function (resolve, reject) {
+                var new_user = new user_model({
+                    username: username,
+                    id: id,
+                    socket: 0,
+                    latest_connection: Date.now(),
+                    first_connection: Date.now(),
+                    played_playlists: [],
+                    number_of_badges: 0,
+                    badges: [],
+                    correct_guesses: 0,
+                    incorrect_guesses: 0,
+                    rooms_won: 0,
+                    rooms_lost: 0,
+                    oAuth: oAuth
+                });
+                new_user.save(function (error, success) {
+                    if (error)
+                        reject(error);
+                    if (success)
+                        resolve(success);
+                });
+            })];
     });
-    return new Promise(function (resolve) {
-        new_user.save({}, function (error, success) {
-            if (error)
-                resolve(error);
-            if (success)
-                resolve(success);
-        });
-    });
-};
+}); };
 var get_user_by_id = function (id) { return __awaiter(_this, void 0, void 0, function () {
     return __generator(this, function (_a) {
         return [2 /*return*/, new Promise(function (resolve, reject) {
@@ -77,6 +93,6 @@ var get_user_by_id = function (id) { return __awaiter(_this, void 0, void 0, fun
     });
 }); };
 module.exports = {
-    add_new_user: add_new_user,
+    init_user: init_user,
     get_user_by_id: get_user_by_id
 };

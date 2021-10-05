@@ -145,7 +145,7 @@ app.get('/callback', (req:any, res:any):void => {
 			json: true
 		};
 
-		request.post(authOptions, function (error:any, response:any, body:any) {
+		request.post(authOptions, (error:any, response:any, body:any) => {
 			if (!error && response.statusCode === 200) {
 
 				var access_token = body.access_token,
@@ -181,7 +181,7 @@ app.get('/callback', (req:any, res:any):void => {
 	}
 });
 
-app.get('/refresh_token/:token', function (req:any, res:any) {
+app.get('/refresh_token/:token', (req:any, res:any) => {
 
 	// requesting access token from refresh token
 	var refresh_token = req.params.token;
