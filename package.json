@@ -11,7 +11,9 @@
     "nodemon": "^2.0.13",
     "querystring": "^0.2.1",
     "request": "^2.88.2",
-    "string-similarity": "^4.0.4"
+    "string-similarity": "^4.0.4",
+    "uuid4": "^2.0.2",
+    "uuidv4": "^6.2.12"
   },
   "devDependencies": {
     "@types/node": "^16.10.2"

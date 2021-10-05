@@ -8,6 +8,7 @@ require('dotenv').config();
 const querystring = require('querystring');
 const request = require('request');
 const ss = require("string-similarity");
+const { v4: uuid_v4 } = require('uuid');
 
 //DATABASE - MongoDB & Mongoose
 //@ts-ignore
@@ -46,24 +47,20 @@ interface New_user {
 }
 
 app.post('/add_user', (req:any, res:any) => {
-	const new_date = new Date;
-	let new_user:New_user = {
-		username: req.body.username,
-		id:req.body.username,
-		password: '213abc!',//getHashedPassword(),
-		latest_login_number: Date.now(),
-		latest_login_string: new_date.toDateString(),
-		login_token: '123abc123',//getLoginToken(),
-		played_playlists: [],
-		uuid: '1234' //uuid4(),
+	if(req.body.username != undefined){
+		DB_users.init_user(req.body.username,  req.body.id, uuid_v4())
+		.then(data => {
+			res.send({data})
+			debug.print_success_status(`Added user ${data.username}`);
+		})
+	} else {
+		res.send({error:"Couldn't add user, insufficient data reievied."})
+		debug.print_error_status(`Failed to add user.`);
+		debug.print_line('Failed to add user.')
 	}
-	DB_users.add_new_user(new_user)
-	.then(data => res.send({data}))
-	
-	debug.print_general_status(`Added user ${new_user.username}`);
+
 });
 app.get('/get_user/:id', (req:any, res:any) => {
-
 	DB_users.get_user_by_id(req.params.id)
 	.then(data => {
 		res.send({data});
