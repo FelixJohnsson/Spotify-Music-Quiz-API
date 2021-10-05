@@ -32,7 +32,11 @@ app.post('/add_user', function (req, res) {
     if (req.body.username != undefined && req.body.username.length > 0) {
         DB_users.init_user(req.body.username, req.body.id, uuid_v4())
             .then(function (data) {
-            res.send({ data: data });
+            var success_object = {
+                statusCode: 200,
+                content: data
+            };
+            res.send(success_object);
             debug.print_success_status("Added user " + data.username);
         });
     }
