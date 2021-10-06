@@ -23,4 +23,8 @@ describe('Database functions', () => {
   it('Should get user from MongoDB.', () => {
     return expect(database.get_user_by_id(user_info.id)).to.eventually.have.length.above(0);
   });
+  it('Should delete user from MongoDB.', () => {
+    let type = 'delete';
+    return expect(database.update_user(user_info.id, type)).to.eventually.contain({deletedCount:1})
+  });
 });
