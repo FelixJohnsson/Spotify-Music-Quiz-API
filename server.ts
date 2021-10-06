@@ -17,7 +17,7 @@ mongoose.connect(process.env.MONGO, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
-.then((res:any) => debug.print_success_status('Connected to MongoDB.')) 
+.then((res:any) => /*debug.print_success_status('Connected to MongoDB.')*/) 
 .catch((err:any) => debug.print_error_status('Failed to connect to MongoDB.'))
 
 //SERVER -  Express
@@ -32,7 +32,7 @@ app.use(express.static("public"))
 	.use(bodyParser.json());
 
 const server = app.listen(process.env.PORT, () => {
-	debug.print_success_status('Connected to: ' + process.env.PORT);
+	//debug.print_success_status('Connected to: ' + process.env.PORT);
 });
 
 
