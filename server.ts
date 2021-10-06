@@ -70,7 +70,7 @@ app.post('/add_user', (req:any, res:any) => {
 	} else {
 		let error_object:Error_object = {
 			statusCode: 400,
-			error_message: "Couldn't add user, insufficient data reievied.",
+			error_message: "Couldn't add user, insufficient data received.",
 			content:{}
 		}
 		res.send(error_object)
@@ -225,3 +225,11 @@ app.get('/refresh_token/:token', (req:any, res:any) => {
 		})
 
 });
+
+const calc = (a,b) => {
+	return a*b;
+}
+
+module.exports = {
+	calc
+}

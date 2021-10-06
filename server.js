@@ -43,7 +43,7 @@ app.post('/add_user', function (req, res) {
     else {
         var error_object = {
             statusCode: 400,
-            error_message: "Couldn't add user, insufficient data reievied.",
+            error_message: "Couldn't add user, insufficient data received.",
             content: {}
         };
         res.send(error_object);
@@ -163,3 +163,9 @@ app.get('/refresh_token/:token', function (req, res) {
         }
     });
 });
+var calc = function (a, b) {
+    return a * b;
+};
+module.exports = {
+    calc: calc
+};
