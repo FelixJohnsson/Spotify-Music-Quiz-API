@@ -47,7 +47,7 @@ const init_user = async (id: String, username:String, oAuth:String) => {
 
 const get_user_by_id = async (id: string) => {
     return new Promise((resolve, reject) => {
-        user_model.find({username:id}, (error:any, success:any) => {
+        user_model.find({id:id}, (error:any, success:any) => {
             if(error) reject(404);
             if(success) resolve(success);
         })

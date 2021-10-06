@@ -83,7 +83,7 @@ var init_user = function (id, username, oAuth) { return __awaiter(_this, void 0,
 var get_user_by_id = function (id) { return __awaiter(_this, void 0, void 0, function () {
     return __generator(this, function (_a) {
         return [2 /*return*/, new Promise(function (resolve, reject) {
-                user_model.find({ username: id }, function (error, success) {
+                user_model.find({ id: id }, function (error, success) {
                     if (error)
                         reject(404);
                     if (success)
