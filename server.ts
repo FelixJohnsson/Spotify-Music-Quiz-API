@@ -9,6 +9,8 @@ const querystring = require('querystring');
 const request = require('request');
 const ss = require("string-similarity");
 const { v4: uuid_v4 } = require('uuid');
+const axios = require('axios');
+
 
 //DATABASE - MongoDB & Mongoose
 //@ts-ignore
@@ -17,7 +19,7 @@ mongoose.connect(process.env.MONGO, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
-.then((res:any) => /*debug.print_success_status('Connected to MongoDB.')*/) 
+.then((res:any) => debug.print_success_status('Connected to MongoDB.')) 
 .catch((err:any) => debug.print_error_status('Failed to connect to MongoDB.'))
 
 //SERVER -  Express
@@ -32,7 +34,7 @@ app.use(express.static("public"))
 	.use(bodyParser.json());
 
 const server = app.listen(process.env.PORT, () => {
-	//debug.print_success_status('Connected to: ' + process.env.PORT);
+	debug.print_success_status('Connected to: ' + process.env.PORT);
 });
 
 
@@ -78,6 +80,7 @@ app.post('/add_user', (req:any, res:any) => {
 	}
 
 });
+
 app.get('/get_user/:id', (req:any, res:any) => {
 	DB_users.get_user_by_id(req.params.id)
 	.then(data => {
@@ -86,9 +89,15 @@ app.get('/get_user/:id', (req:any, res:any) => {
 	})
 });
 
+app.get('/logged_in/:data', (req:any, res:any) => {
+		let data = req.params.data.split('&');
+		res.send({data});
+		debug.print_general_status(`Logged in user ${'ADMIN'}`);
+});
 
+app.get('/', (req:any, res:any) => {
 
-
+});
 
 
 
@@ -163,28 +172,30 @@ app.get('/callback', (req:any, res:any):void => {
 		request.post(authOptions, (error:any, response:any, body:any) => {
 			if (!error && response.statusCode === 200) {
 
-				var access_token = body.access_token,
-				refresh_token = body.refresh_token;
 
+				let access_token = body.access_token,
+				refresh_token = body.refresh_token;
 			
 				// we can also pass the token to the browser to make requests from there
-				request("https://api.spotify.com/v1/me", {
-                    headers: {
-                        Accept: "application/json",
-                        Authorization: "Bearer " + access_token,
-                        "Content-Type": "application/json"
-                    }
-                })
-                    .on('response', (data) => {
+				axios("https://api.spotify.com/v1/me", {
+					headers: {
+						Accept: "application/json",
+						Authorization: "Bearer " + 'BQD94rH9VaW9XF72K5lJopxrK23iL0gAYnsG2QIZkcBZ7UTX6-NBp7rpJcVz2oOTp1sDigITtBEaF2eIpqaeD-FIAzTSI7Mvb8UixBp0_IJjhqhbXMYsrAejnjmVo2qWPWPJVRmM4AU2z-tyUtxAMABKE4RNSmhClGN0LMclFSnavSZXZK-tIf4L9U2V7_PCIc8FgM57Y6QEqkPvRNX9xBeTYmG9WV-znkUImq2T6s9NxqE9oh9-U7jcb7-PWCoGYA',
+						"Content-Type": "application/json"
+					}
+				})
+					.then((response) => {
+						console.log(response.data)
+					
                     res.redirect('/logged_in/' +
                         querystring.stringify({
                             access_token: access_token,
                             refresh_token: refresh_token,
-                            id: data.id,
-                            username: data.display_name
+                            id: response.data.id,
+                            username: response.data.display_name
                         }));
                     debug.print_success_login('User successfully logged in');
-					})
+				})
 			} else {
 				res.redirect('/#' +
 					querystring.stringify({
@@ -195,7 +206,7 @@ app.get('/callback', (req:any, res:any):void => {
 		});
 	}
 });
-
+/*
 app.get('/refresh_token/:token', (req:any, res:any) => {
 
 	// requesting access token from refresh token
@@ -225,7 +236,7 @@ app.get('/refresh_token/:token', (req:any, res:any) => {
 		})
 
 });
-
+*/
 const calc = (a,b) => {
 	return a*b;
 }

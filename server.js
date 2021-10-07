@@ -7,6 +7,7 @@ var querystring = require('querystring');
 var request = require('request');
 var ss = require("string-similarity");
 var uuid_v4 = require('uuid').v4;
+var axios = require('axios');
 //DATABASE - MongoDB & Mongoose
 //@ts-ignore
 var mongoose = require('mongoose');
@@ -14,7 +15,7 @@ mongoose.connect(process.env.MONGO, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
-    .then(function (res) { return ; } /*debug.print_success_status('Connected to MongoDB.')*/)["catch"](function (err) { return debug.print_error_status('Failed to connect to MongoDB.'); });
+    .then(function (res) { return debug.print_success_status('Connected to MongoDB.'); })["catch"](function (err) { return debug.print_error_status('Failed to connect to MongoDB.'); });
 //SERVER -  Express
 var express = require('express');
 var router = express.Router();
@@ -26,7 +27,7 @@ app.use(express.static("public"))
     .use(bodyParser.urlencoded({ extended: false }))
     .use(bodyParser.json());
 var server = app.listen(process.env.PORT, function () {
-    //debug.print_success_status('Connected to: ' + process.env.PORT);
+    debug.print_success_status('Connected to: ' + process.env.PORT);
 });
 app.post('/add_user', function (req, res) {
     if (req.body.username != undefined && req.body.username.length > 0) {
@@ -56,6 +57,13 @@ app.get('/get_user/:id', function (req, res) {
         res.send({ data: data });
         debug.print_general_status("Found user " + req.params.id);
     });
+});
+app.get('/logged_in/:data', function (req, res) {
+    var data = req.params.data.split('&');
+    res.send({ data: data });
+    debug.print_general_status("Logged in user " + 'ADMIN');
+});
+app.get('/', function (req, res) {
 });
 var spotify = require('./spotify_functions.js');
 // SPOTIFY - Functions
@@ -106,22 +114,23 @@ app.get('/callback', function (req, res) {
         };
         request.post(authOptions, function (error, response, body) {
             if (!error && response.statusCode === 200) {
-                var access_token = body.access_token, refresh_token = body.refresh_token;
+                var access_token_1 = body.access_token, refresh_token_1 = body.refresh_token;
                 // we can also pass the token to the browser to make requests from there
-                request("https://api.spotify.com/v1/me", {
+                axios("https://api.spotify.com/v1/me", {
                     headers: {
                         Accept: "application/json",
-                        Authorization: "Bearer " + access_token,
+                        Authorization: "Bearer " + 'BQD94rH9VaW9XF72K5lJopxrK23iL0gAYnsG2QIZkcBZ7UTX6-NBp7rpJcVz2oOTp1sDigITtBEaF2eIpqaeD-FIAzTSI7Mvb8UixBp0_IJjhqhbXMYsrAejnjmVo2qWPWPJVRmM4AU2z-tyUtxAMABKE4RNSmhClGN0LMclFSnavSZXZK-tIf4L9U2V7_PCIc8FgM57Y6QEqkPvRNX9xBeTYmG9WV-znkUImq2T6s9NxqE9oh9-U7jcb7-PWCoGYA',
                         "Content-Type": "application/json"
                     }
                 })
-                    .on('response', function (data) {
+                    .then(function (response) {
+                    console.log(response.data);
                     res.redirect('/logged_in/' +
                         querystring.stringify({
-                            access_token: access_token,
-                            refresh_token: refresh_token,
-                            id: data.id,
-                            username: data.display_name
+                            access_token: access_token_1,
+                            refresh_token: refresh_token_1,
+                            id: response.data.id,
+                            username: response.data.display_name
                         }));
                     debug.print_success_login('User successfully logged in');
                 });
@@ -136,7 +145,9 @@ app.get('/callback', function (req, res) {
         });
     }
 });
-app.get('/refresh_token/:token', function (req, res) {
+/*
+app.get('/refresh_token/:token', (req:any, res:any) => {
+
     // requesting access token from refresh token
     var refresh_token = req.params.token;
     var authOptions = {
@@ -151,18 +162,20 @@ app.get('/refresh_token/:token', function (req, res) {
         },
         json: true
     };
-    request.post(authOptions, function (error, response, body) {
-        if (!error && response.statusCode === 200) {
-            var access_token = body.access_token;
-            res.send({
-                'access_token': access_token
-            });
-        }
-        else {
-            res.send(response);
-        }
-    });
+
+    request.post(authOptions, function (error:String, response:any, body:any) {
+            if (!error && response.statusCode === 200) {
+                var access_token = body.access_token;
+                res.send({
+                    'access_token': access_token
+                });
+            } else {
+                res.send(response)
+            }
+        })
+
 });
+*/
 var calc = function (a, b) {
     return a * b;
 };
