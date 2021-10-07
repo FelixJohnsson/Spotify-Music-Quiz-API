@@ -15,7 +15,9 @@ mongoose.connect(process.env.MONGO, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
-    .then(function (res) { return debug.print_success_status('Connected to MongoDB.'); })["catch"](function (err) { return debug.print_error_status('Failed to connect to MongoDB.'); });
+    .then(function (res) {
+    //debug.print_success_status('Connected to MongoDB.');
+})["catch"](function (err) { return debug.print_error_status('Failed to connect to MongoDB.'); });
 //SERVER -  Express
 var express = require('express');
 var router = express.Router();
@@ -27,7 +29,7 @@ app.use(express.static("public"))
     .use(bodyParser.urlencoded({ extended: false }))
     .use(bodyParser.json());
 var server = app.listen(process.env.PORT, function () {
-    debug.print_success_status('Connected to: ' + process.env.PORT);
+    //debug.print_success_status('Connected to: ' + process.env.PORT);
 });
 app.post('/add_user', function (req, res) {
     if (req.body.username != undefined && req.body.username.length > 0) {

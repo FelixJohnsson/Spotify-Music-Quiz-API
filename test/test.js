@@ -70,4 +70,23 @@ describe('Spotify endpoint tests', () => {
     }
     return expect(fetching()).to.eventually.equal('Study')
   })
+
+  it('Should get Available Devices.', () => {
+    const fetching = () => {
+      return new Promise((resolve, reject) => {
+        axios("https://api.spotify.com/v1/me/player/devices", {
+          headers: {
+            Accept: "application/json",
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json"
+          }
+        })
+          .then((response) => {
+            resolve(response.data)
+            reject(err)
+          })
+      })
+    }
+    return expect(fetching()).to.eventually.not.be.an('undefined')
+  })
 })
