@@ -3,8 +3,9 @@ const chaiaspromised = require('chai-as-promised');
 expect = chai.expect;
 chai.use(chaiaspromised);
 
-const server = require('../server.js')
-const database = require('../Database/users.js')
+const axios = require('axios');
+const server = require('../server.js');
+const database = require('../Database/users.js');
 
 describe('Calc function', () => {
   it('should return a*b', () => {
@@ -30,9 +31,24 @@ describe('Database functions', () => {
 });
 
 //SPOTIFY
-let token = ''; //REQUIRED
+let token = 'BQAj5Y1tKEhlszWTVJkoUVX9jIVulgdyYaNXF8ST30UY9_r5IG_a2cJRs1BqtdndyVoiEogn2k_ia_-IHOl3VJZ6I53-9N6icoJxQjYLJayefTXPUR2EJARvscFXqr2VCQ4DUntx0bhVCwGX2Vn1-vI0IHoljkoLkGSFxwyGCo9YxMzN3gthO4qw_ar6q3Z482t47GfsmVJ8gx6sZEwJSu6Buv_oylcxD5oCaPxfvJN96XRLTpkuikMcdtfjna7Vsw'; //REQUIRED
 describe('Spotify endpoint tests', () => {
   it('Should get user info.', () => {
-
+    const fetching = () => {
+      return new Promise((resolve, reject) => {
+        axios("https://api.spotify.com/v1/me", {
+          headers: {
+            Accept: "application/json",
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json"
+          }
+        })
+          .then((response) => {
+            resolve(response.data)
+          })
+      })
+    }
+    return expect(fetching()).to.eventually.contain({display_name:'felle21'})
   })
+  
 })

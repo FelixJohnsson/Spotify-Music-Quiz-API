@@ -180,13 +180,11 @@ app.get('/callback', (req:any, res:any):void => {
 				axios("https://api.spotify.com/v1/me", {
 					headers: {
 						Accept: "application/json",
-						Authorization: "Bearer " + 'BQD94rH9VaW9XF72K5lJopxrK23iL0gAYnsG2QIZkcBZ7UTX6-NBp7rpJcVz2oOTp1sDigITtBEaF2eIpqaeD-FIAzTSI7Mvb8UixBp0_IJjhqhbXMYsrAejnjmVo2qWPWPJVRmM4AU2z-tyUtxAMABKE4RNSmhClGN0LMclFSnavSZXZK-tIf4L9U2V7_PCIc8FgM57Y6QEqkPvRNX9xBeTYmG9WV-znkUImq2T6s9NxqE9oh9-U7jcb7-PWCoGYA',
+						Authorization: "Bearer " + access_token,
 						"Content-Type": "application/json"
 					}
 				})
 					.then((response) => {
-						console.log(response.data)
-					
                     res.redirect('/logged_in/' +
                         querystring.stringify({
                             access_token: access_token,
@@ -196,12 +194,13 @@ app.get('/callback', (req:any, res:any):void => {
                         }));
                     debug.print_success_login('User successfully logged in');
 				})
+				.catch(() => debug.print_error_login('User unsuccessfully logged in'))
 			} else {
 				res.redirect('/#' +
 					querystring.stringify({
 						error: 'invalid_token'
 					}));
-					debug.print_error_login('User unsuccessfully logged in.' + {error: 'Invalid token.'});
+					debug.print_error_login('User unsuccessfully logged in');
 			}
 		});
 	}
