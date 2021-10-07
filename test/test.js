@@ -28,3 +28,11 @@ describe('Database functions', () => {
     return expect(database.update_user(user_info.id, type)).to.eventually.contain({deletedCount:1})
   });
 });
+
+//SPOTIFY
+let token = ''; //REQUIRED
+describe('Spotify endpoint tests', () => {
+  it('Should get user info.', () => {
+
+  })
+})
