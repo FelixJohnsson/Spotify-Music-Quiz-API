@@ -45,10 +45,29 @@ describe('Spotify endpoint tests', () => {
         })
           .then((response) => {
             resolve(response.data)
+            reject(err)
           })
       })
     }
     return expect(fetching()).to.eventually.contain({display_name:'felle21'})
   })
-  
+
+  it('Should get playlist info.', () => {
+    const fetching = () => {
+      return new Promise((resolve, reject) => {
+        axios("https://api.spotify.com/v1/playlists/19S5kN779akXA6ySIZM2ve", {
+          headers: {
+            Accept: "application/json",
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json"
+          }
+        })
+          .then((response) => {
+            resolve(response.data.name)
+            reject(err)
+          })
+      })
+    }
+    return expect(fetching()).to.eventually.equal('Study')
+  })
 })
