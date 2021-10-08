@@ -110,6 +110,7 @@ var update_user = function (id, type, value) { return __awaiter(_this, void 0, v
                         filter = { id: id };
                         update = { $set: { latest_connection: Date.now(), oAuth: value } };
                         user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, function (error, success) {
+                            console.log(success);
                             if (error)
                                 reject(error);
                             if (success)

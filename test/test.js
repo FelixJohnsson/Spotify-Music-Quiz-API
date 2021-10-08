@@ -28,10 +28,14 @@ describe('Database functions', () => {
     let type = 'delete';
     return expect(database.update_user(user_info.id, type)).to.eventually.contain({deletedCount:1})
   });
+  it('Should ')
 });
 
+
+
+
 //SPOTIFY
-let token = 'BQAj5Y1tKEhlszWTVJkoUVX9jIVulgdyYaNXF8ST30UY9_r5IG_a2cJRs1BqtdndyVoiEogn2k_ia_-IHOl3VJZ6I53-9N6icoJxQjYLJayefTXPUR2EJARvscFXqr2VCQ4DUntx0bhVCwGX2Vn1-vI0IHoljkoLkGSFxwyGCo9YxMzN3gthO4qw_ar6q3Z482t47GfsmVJ8gx6sZEwJSu6Buv_oylcxD5oCaPxfvJN96XRLTpkuikMcdtfjna7Vsw'; //REQUIRED
+let token = 'BQBnHWq7kesLVAsH1Gpm_OQQlvYsqUgcyB0pHE6Ka4CGsVJc-Gjq0wyAh6Q5lGIVc8nBvr5mwdoJDzPUbaZlC5Hy3doanf0tSpVzpXltfGgWxyvnXkji5Gf8JMKiBviQZqjoHGnj7lxFKoQHs-fwpxivduXfx850MYeK3c52xm127TQd49f9ZBoy3BRloglh8kJINYGhxg_kN04y8tcBijBpwG2XXX97XPD3POzES1MpL6MEyCQ9yd2PtN2ZDw2VTA'; //REQUIRED
 describe('Spotify endpoint tests', () => {
   it('Should get user info.', () => {
     const fetching = () => {

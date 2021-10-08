@@ -16,7 +16,7 @@ mongoose.connect(process.env.MONGO, {
     useUnifiedTopology: true
 })
     .then(function (res) {
-    //debug.print_success_status('Connected to MongoDB.');
+    debug.print_success_status('Connected to MongoDB.');
 })["catch"](function (err) { return debug.print_error_status('Failed to connect to MongoDB.'); });
 //SERVER -  Express
 var express = require('express');
@@ -29,43 +29,74 @@ app.use(express.static("public"))
     .use(bodyParser.urlencoded({ extended: false }))
     .use(bodyParser.json());
 var server = app.listen(process.env.PORT, function () {
-    //debug.print_success_status('Connected to: ' + process.env.PORT);
+    debug.print_success_status('Connected to: ' + process.env.PORT);
 });
+var create_error_object = function (statusCode, error_message, content) {
+    if (statusCode === void 0) { statusCode = 400; }
+    var error_object = {
+        statusCode: statusCode,
+        error_message: error_message,
+        content: content
+    };
+    return error_object;
+};
+var create_success_object = function (statusCode, content) {
+    if (statusCode === void 0) { statusCode = 200; }
+    var success_object = {
+        statusCode: statusCode,
+        content: content
+    };
+    return success_object;
+};
 app.post('/add_user', function (req, res) {
     if (req.body.username != undefined && req.body.username.length > 0) {
-        DB_users.init_user(req.body.username, req.body.id, uuid_v4())
+        DB_users.init_user(req.body.id, req.body.username, uuid_v4())
             .then(function (data) {
-            var success_object = {
-                statusCode: 200,
-                content: data
-            };
-            res.send(success_object);
+            res.send(create_success_object(200, data));
             debug.print_success_status("Added user " + data.username);
         });
     }
     else {
-        var error_object = {
-            statusCode: 400,
-            error_message: "Couldn't add user, insufficient data received.",
-            content: {}
-        };
-        res.send(error_object);
+        res.send(create_error_object(400, "Couldn't add user, insufficient data received."));
         debug.print_error_status("Failed to add user.");
     }
 });
 app.get('/get_user/:id', function (req, res) {
     DB_users.get_user_by_id(req.params.id)
         .then(function (data) {
-        res.send({ data: data });
+        res.send(create_success_object(200, data));
         debug.print_general_status("Found user " + req.params.id);
     });
 });
 app.get('/logged_in/:data', function (req, res) {
     var data = req.params.data.split('&');
-    res.send({ data: data });
+    var user_info = {
+        access_token: data[0].split('=')[1],
+        refresh_token: data[1].split('=')[1],
+        id: data[2].split('=')[1],
+        username: data[3].split('=')[1],
+        oAuth: uuid_v4()
+    };
+    DB_users.update_user(user_info.id, 'login', user_info.oAuth);
+    res.send(create_success_object(200, data));
     debug.print_general_status("Logged in user " + 'ADMIN');
 });
-app.get('/', function (req, res) {
+app.post('/update_user', function (req, res) {
+    var array_of_types = ['delete', 'login', 'join_room', 'correct_guess', 'incorrect_guess', 'rooms_won', 'rooms_lost', 'new_badge'];
+    if (req.body.type === 'login') {
+        req.body.value = uuid_v4();
+    }
+    if (array_of_types.includes(req.body.type) && req.body.id.length > 0) {
+        DB_users.update_user(req.body.id, req.body.type, req.body.value)
+            .then(function (data) {
+            res.send(create_success_object(200, data));
+        })["catch"](function (err) {
+            res.send(create_error_object(200, 'Error', err));
+        });
+    }
+    else {
+        console.log('ERROR');
+    }
 });
 var spotify = require('./spotify_functions.js');
 // SPOTIFY - Functions

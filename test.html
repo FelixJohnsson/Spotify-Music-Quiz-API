@@ -11,10 +11,12 @@
 </body>
 <script>
     let data = {
-        username: '',
-        id:'Tovars222'
+        id:'felle21',
+        username:'felle21',
+        type:'login',
+        value:''
     }
-    fetch('http://localhost:5000/add_user', {
+    fetch('http://localhost:5000/update_user', {
         method: 'POST',
         headers:{'content-type': 'application/json'},
         body:JSON.stringify(data)

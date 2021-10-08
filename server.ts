@@ -11,7 +11,6 @@ const ss = require("string-similarity");
 const { v4: uuid_v4 } = require('uuid');
 const axios = require('axios');
 
-
 //DATABASE - MongoDB & Mongoose
 //@ts-ignore
 const mongoose = require('mongoose');
@@ -20,7 +19,7 @@ mongoose.connect(process.env.MONGO, {
     useUnifiedTopology: true
 })
 .then((res:any) => {
-	//debug.print_success_status('Connected to MongoDB.');
+	debug.print_success_status('Connected to MongoDB.');
 })
 .catch((err:any) => debug.print_error_status('Failed to connect to MongoDB.'))
 
@@ -36,7 +35,7 @@ app.use(express.static("public"))
 	.use(bodyParser.json());
 
 const server = app.listen(process.env.PORT, () => {
-	//debug.print_success_status('Connected to: ' + process.env.PORT);
+	debug.print_success_status('Connected to: ' + process.env.PORT);
 });
 
 
@@ -60,45 +59,75 @@ interface Success_object {
 	content:Object,
 }
 
+const create_error_object = (statusCode:Number = 400, error_message:String, content?:any) => {
+    let error_object:Error_object = {
+        statusCode: statusCode,
+        error_message: error_message,
+        content: content
+    }
+    return error_object;
+}
+const create_success_object = (statusCode:Number = 200, content:any) => {
+    let success_object:Success_object = {
+        statusCode: statusCode,
+        content: content
+    }
+    return success_object;
+}
+
+
+
+
+
 app.post('/add_user', (req:any, res:any) => {
 	if(req.body.username != undefined && req.body.username.length > 0){
-		DB_users.init_user(req.body.username,  req.body.id, uuid_v4())
+		DB_users.init_user(req.body.id, req.body.username, uuid_v4())
 		.then(data => {
-			let success_object:Success_object = {
-				statusCode: 200,
-				content: data
-			}
-			res.send(success_object)
+			res.send(create_success_object(200, data))
 			debug.print_success_status(`Added user ${data.username}`);
 		})
 	} else {
-		let error_object:Error_object = {
-			statusCode: 400,
-			error_message: "Couldn't add user, insufficient data received.",
-			content:{}
-		}
-		res.send(error_object)
+		res.send(create_error_object(400, "Couldn't add user, insufficient data received."));
 		debug.print_error_status(`Failed to add user.`);
 	}
-
 });
 
 app.get('/get_user/:id', (req:any, res:any) => {
 	DB_users.get_user_by_id(req.params.id)
 	.then(data => {
-		res.send({data});
+		res.send(create_success_object(200, data))
 		debug.print_general_status(`Found user ${req.params.id}`);
 	})
 });
 
 app.get('/logged_in/:data', (req:any, res:any) => {
-		let data = req.params.data.split('&');
-		res.send({data});
+		const data = req.params.data.split('&');
+		let user_info = {
+			access_token: data[0].split('=')[1],
+			refresh_token: data[1].split('=')[1],
+			id: data[2].split('=')[1],
+			username: data[3].split('=')[1],
+			oAuth: uuid_v4()
+		}
+		DB_users.update_user(user_info.id, 'login', user_info.oAuth);
+		res.send(create_success_object(200, data));
 		debug.print_general_status(`Logged in user ${'ADMIN'}`);
 });
 
-app.get('/', (req:any, res:any) => {
-
+app.post('/update_user', (req:any, res:any) => {
+	const array_of_types = ['delete', 'login', 'join_room', 'correct_guess', 'incorrect_guess', 'rooms_won', 'rooms_lost', 'new_badge'];
+	if(req.body.type === 'login'){req.body.value = uuid_v4()}
+	if(array_of_types.includes(req.body.type) && req.body.id.length > 0){
+		DB_users.update_user(req.body.id, req.body.type, req.body.value)
+		.then(data =>{
+			res.send(create_success_object(200, data))
+		})
+		.catch(err => {
+			res.send(create_error_object(200, 'Error', err))
+		})
+	} else {
+		console.log('ERROR')
+	}
 });
 
 
