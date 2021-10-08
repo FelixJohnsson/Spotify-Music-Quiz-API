@@ -7,10 +7,14 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
 </head>
 <body>
-    
+    <div id="output">
+
+    </div>
+    <button onclick="fetch_user()">Fetch</button>
 </body>
 <script>
-    let data = {
+    const fetch_user = () => {
+        let data = {
         id:'felle21',
         username:'felle21',
         type:'login',
@@ -22,6 +26,31 @@
         body:JSON.stringify(data)
     })
     .then(res => res.json())
-    .then(data => console.log(data))
+    .then(data => {
+        let div = document.getElementById('output');
+        console.log(data)
+            let us = document.createElement('P')
+            let us_t = document.createTextNode('Username: ' + data.content.username);
+            us.appendChild(us_t)
+
+            let id = document.createElement('P')
+            let id_t = document.createTextNode('ID: ' + data.content.id);
+            id.appendChild(id_t)
+
+            let lc = document.createElement('P')
+            let lc_t = document.createTextNode('Latest connection: ' + data.content.latest_connection);
+            lc.appendChild(lc_t)
+
+            let oAuth = document.createElement('P')
+            let oAuth_t = document.createTextNode('oAuth: ' + data.content.oAuth);
+            oAuth.appendChild(oAuth_t)
+
+            div.appendChild(us)
+            div.appendChild(id)
+            div.appendChild(lc)
+            div.appendChild(oAuth)
+    })
+    }
+
 </script>
 </html>
