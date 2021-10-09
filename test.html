@@ -23,7 +23,9 @@
     <button onclick="post_socket_change()">Post socket change</button>
 </body>
 <script>
-    let data = {
+
+    const post_playlist = () => {
+        let data = {
         id: 'felle21',
         username: 'felle21',
         type: 'join_room',
@@ -31,7 +33,26 @@
             name: "90's Rock"
         }
     }
-    const post_playlist = () => {
+        fetch('http://localhost:5000/update_user', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                fetch_user();
+            })
+    }
+    
+    const post_room_win = () => {
+        let data = {
+        id: 'felle21',
+        username: 'felle21',
+        type: 'rooms_won',
+        value: ''
+    }
         fetch('http://localhost:5000/update_user', {
                 method: 'POST',
                 headers: {
