@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset='utf-8'>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>Page Title</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
 </head>
+
 <body onload="fetch_user()">
     <div id="output">
 
@@ -21,76 +23,100 @@
     <button onclick="post_socket_change()">Post socket change</button>
 </body>
 <script>
+    let data = {
+        id: 'felle21',
+        username: 'felle21',
+        type: 'join_room',
+        value: {
+            name: "90's Rock"
+        }
+    }
+    const post_playlist = () => {
+        fetch('http://localhost:5000/update_user', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                fetch_user();
+            })
+    }
+
     const fetch_user = () => {
         let data = {
-        id:'felle21',
-        username:'felle21',
-        type:'login',
-        value:''
-    }
-    fetch('http://localhost:5000/update_user', {
-        method: 'POST',
-        headers:{'content-type': 'application/json'},
-        body:JSON.stringify(data)
-    })
-    .then(res => res.json())
-    .then(data => {
-        let div = document.getElementById('output');
-        console.log(data)
-            let us = document.createElement('P')
-            let us_t = document.createTextNode('Username: ' + data.content.username);
-            us.appendChild(us_t)
-
-            let id = document.createElement('P')
-            let id_t = document.createTextNode('ID: ' + data.content.id);
-            id.appendChild(id_t)
-
-            let lc = document.createElement('P')
-            let lc_t = document.createTextNode('Latest connection: ' + data.content.latest_connection);
-            lc.appendChild(lc_t)
-
-            let oAuth = document.createElement('P')
-            let oAuth_t = document.createTextNode('oAuth: ' + data.content.oAuth);
-            oAuth.appendChild(oAuth_t)
-
-            let cg = document.createElement('P')
-            let cg_t = document.createTextNode('Correct guesses: ' + data.content.correct_guesses);
-            cg.appendChild(cg_t)
-
-            let icg = document.createElement('P')
-            let icg_t = document.createTextNode('Incorrect guesses: ' + data.content.incorrect_guesses);
-            icg.appendChild(icg_t)
-
-            let rw = document.createElement('P')
-            let rw_t = document.createTextNode('Rooms won: ' + data.content.rooms_won);
-            rw.appendChild(rw_t)
-
-            let rl = document.createElement('P')
-            let rl_t = document.createTextNode('Rooms lost: ' + data.content.rooms_lost);
-            rl.appendChild(rl_t)
-
-            let socket = document.createElement('P')
-            let socket_t = document.createTextNode('Socket: ' + data.content.socket);
-            socket.appendChild(socket_t)
-
-            data.content.played_playlists.forEach(el => {
-                let pp = document.createElement('P')
-                let pp_t = document.createTextNode('Playlist: ' + el.name);
-                pp.appendChild(pp_t);
-                document.getElementById('playlists').appendChild(pp);
+            id: 'felle21',
+            username: 'felle21',
+            type: 'login',
+            value: ''
+        }
+        fetch('http://localhost:5000/update_user', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(data)
             })
+            .then(res => res.json())
+            .then(data => {
+                let div = document.getElementById('output');
+                console.log(data)
+                let us = document.createElement('P')
+                let us_t = document.createTextNode('Username: ' + data.content.username);
+                us.appendChild(us_t)
 
-            div.appendChild(us)
-            div.appendChild(id)
-            div.appendChild(lc)
-            div.appendChild(oAuth)
-            div.appendChild(cg)
-            div.appendChild(icg)
-            div.appendChild(rw)
-            div.appendChild(rl)
-            div.appendChild(socket)
-    })
+                let id = document.createElement('P')
+                let id_t = document.createTextNode('ID: ' + data.content.id);
+                id.appendChild(id_t)
+
+                let lc = document.createElement('P')
+                let lc_t = document.createTextNode('Latest connection: ' + data.content.latest_connection);
+                lc.appendChild(lc_t)
+
+                let oAuth = document.createElement('P')
+                let oAuth_t = document.createTextNode('oAuth: ' + data.content.oAuth);
+                oAuth.appendChild(oAuth_t)
+
+                let cg = document.createElement('P')
+                let cg_t = document.createTextNode('Correct guesses: ' + data.content.correct_guesses);
+                cg.appendChild(cg_t)
+
+                let icg = document.createElement('P')
+                let icg_t = document.createTextNode('Incorrect guesses: ' + data.content.incorrect_guesses);
+                icg.appendChild(icg_t)
+
+                let rw = document.createElement('P')
+                let rw_t = document.createTextNode('Rooms won: ' + data.content.rooms_won);
+                rw.appendChild(rw_t)
+
+                let rl = document.createElement('P')
+                let rl_t = document.createTextNode('Rooms lost: ' + data.content.rooms_lost);
+                rl.appendChild(rl_t)
+
+                let socket = document.createElement('P')
+                let socket_t = document.createTextNode('Socket: ' + data.content.socket);
+                socket.appendChild(socket_t)
+
+                data.content.played_playlists.forEach(el => {
+                    let pp = document.createElement('P')
+                    let pp_t = document.createTextNode('Playlist: ' + el.name);
+                    pp.appendChild(pp_t);
+                    document.getElementById('playlists').appendChild(pp);
+                })
+
+                div.appendChild(us)
+                div.appendChild(id)
+                div.appendChild(lc)
+                div.appendChild(oAuth)
+                div.appendChild(cg)
+                div.appendChild(icg)
+                div.appendChild(rw)
+                div.appendChild(rl)
+                div.appendChild(socket)
+            })
     }
-
 </script>
+
 </html>

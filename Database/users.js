@@ -183,6 +183,17 @@ var update_user = function (id, type, value) { return __awaiter(_this, void 0, v
                                 resolve(success);
                         });
                     })];
+            case 'socket_change':
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        filter = { id: id };
+                        update = { $set: { socket: value } };
+                        user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, function (error, success) {
+                            if (error)
+                                reject(error);
+                            if (success)
+                                resolve(success);
+                        });
+                    })];
         }
         return [2 /*return*/];
     });

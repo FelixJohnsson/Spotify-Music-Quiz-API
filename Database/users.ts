@@ -135,6 +135,16 @@ const update_user = async (id:String, type:String, value?: String | Number) => {
                 if(success) resolve(success);
             }); 
         })
+        case 'socket_change':
+            return new Promise((resolve, reject) => {
+            filter = { id: id };
+            update = {  $set:{socket: value}};
+    
+            user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
+                if(error) reject(error);
+                if(success) resolve(success);
+            }); 
+        })
     }
 }
 
