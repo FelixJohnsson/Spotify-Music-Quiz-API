@@ -30,7 +30,7 @@
         username: 'felle21',
         type: 'join_room',
         value: {
-            name: "90's Rock"
+            name: "80's Rock"
         }
     }
         fetch('http://localhost:5000/update_user', {
@@ -51,6 +51,25 @@
         id: 'felle21',
         username: 'felle21',
         type: 'rooms_won',
+        value: ''
+    }
+        fetch('http://localhost:5000/update_user', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                fetch_user();
+            })
+    }
+    const post_room_loss = () => {
+        let data = {
+        id: 'felle21',
+        username: 'felle21',
+        type: 'rooms_lost',
         value: ''
     }
         fetch('http://localhost:5000/update_user', {
