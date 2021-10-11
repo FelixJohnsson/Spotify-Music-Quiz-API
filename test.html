@@ -15,12 +15,16 @@
     <div id="playlists">
 
     </div>
+    <div id="badges">
+
+    </div>
     <button onclick="fetch_user()">Fetch</button>
 
     <button onclick="post_playlist()">Post playlist</button>
     <button onclick="post_room_win()">Post room win</button>
     <button onclick="post_room_loss()">Post room loss</button>
     <button onclick="post_socket_change()">Post socket change</button>
+    <button onclick="post_new_badge()">Post new badge</button>
 </body>
 <script>
 
@@ -105,6 +109,26 @@
             })
     }
 
+    const post_new_badge = () => {
+        let data = {
+        id: 'felle21',
+        username: 'felle21',
+        type: 'new_badge',
+        value:  {number: Math.floor(Math.random() * 1000) + 1, name:'A badge!'}
+    }
+        fetch('http://localhost:5000/update_user', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                fetch_user();
+            })
+    }
+
     const fetch_user = () => {
 
 
@@ -124,50 +148,65 @@
                 }
                 console.log(data)
                 let us = document.createElement('P')
-                let us_t = document.createTextNode('Username: ' + data.content[0].username);
+                let us_t = document.createTextNode('Username: ' + data.content.username);
                 us.appendChild(us_t)
 
                 let id = document.createElement('P')
-                let id_t = document.createTextNode('ID: ' + data.content[0].id);
+                let id_t = document.createTextNode('ID: ' + data.content.id);
                 id.appendChild(id_t)
 
                 let lc = document.createElement('P')
-                let lc_t = document.createTextNode('Latest connection: ' + data.content[0].latest_connection);
+                let lc_t = document.createTextNode('Latest connection: ' + data.content.latest_connection);
                 lc.appendChild(lc_t)
 
                 let oAuth = document.createElement('P')
-                let oAuth_t = document.createTextNode('oAuth: ' + data.content[0].oAuth);
+                let oAuth_t = document.createTextNode('oAuth: ' + data.content.oAuth);
                 oAuth.appendChild(oAuth_t)
 
                 let cg = document.createElement('P')
-                let cg_t = document.createTextNode('Correct guesses: ' + data.content[0].correct_guesses);
+                let cg_t = document.createTextNode('Correct guesses: ' + data.content.correct_guesses);
                 cg.appendChild(cg_t)
 
                 let icg = document.createElement('P')
-                let icg_t = document.createTextNode('Incorrect guesses: ' + data.content[0].incorrect_guesses);
+                let icg_t = document.createTextNode('Incorrect guesses: ' + data.content.incorrect_guesses);
                 icg.appendChild(icg_t)
 
                 let rw = document.createElement('P')
-                let rw_t = document.createTextNode('Rooms won: ' + data.content[0].rooms_won);
+                let rw_t = document.createTextNode('Rooms won: ' + data.content.rooms_won);
                 rw.appendChild(rw_t)
 
                 let rl = document.createElement('P')
-                let rl_t = document.createTextNode('Rooms lost: ' + data.content[0].rooms_lost);
+                let rl_t = document.createTextNode('Rooms lost: ' + data.content.rooms_lost);
                 rl.appendChild(rl_t)
 
                 let socket = document.createElement('P')
-                let socket_t = document.createTextNode('Socket: ' + data.content[0].socket);
+                let socket_t = document.createTextNode('Socket: ' + data.content.socket);
                 socket.appendChild(socket_t)
+
+                let room = document.createElement('P')
+                let room_t = document.createTextNode('Room: ' + data.content.current_room);
+                room.appendChild(room_t)
 
                 let playlist_div = document.getElementById('playlists');
                 while (playlist_div.firstChild) {
                     playlist_div.removeChild(playlist_div.lastChild)
                 }
-                data.content[0].played_playlists.forEach(el => {
+                data.content.played_playlists.forEach(el => {
                     let pp = document.createElement('P')
                     let pp_t = document.createTextNode('Playlist: ' + el.name);
                     pp.appendChild(pp_t);
                     document.getElementById('playlists').appendChild(pp);
+                })
+
+                let badge_div = document.getElementById('badges');
+                while (badge_div.firstChild) {
+                    badge_div.removeChild(badge_div.lastChild)
+                }
+                data.content.badges.forEach(el => {
+                    let bp = document.createElement('P')
+                    let bp_t = document.createTextNode('Badge: ' + el.name + ': ' + el.number);
+                    bp.appendChild(bp_t);
+                    document.getElementById('badges').appendChild(bp);
                 })
 
                 div.appendChild(us)
@@ -179,6 +218,7 @@
                 div.appendChild(rw)
                 div.appendChild(rl)
                 div.appendChild(socket)
+                div.appendChild(room)
             })
     }
 </script>

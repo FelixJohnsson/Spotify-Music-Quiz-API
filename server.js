@@ -64,7 +64,7 @@ app.post('/add_user', function (req, res) {
 app.get('/get_user/:id', function (req, res) {
     DB_users.get_user_by_id(req.params.id)
         .then(function (data) {
-        res.send(create_success_object(200, data));
+        res.send(create_success_object(200, data[0]));
         debug.print_general_status("Found user " + req.params.id);
     });
 });

@@ -5,6 +5,7 @@ const user_schema = new mongoose.Schema({
     username: String,
     id: String,
     socket: String,
+    current_room: String,
     latest_connection: String,
     first_connection: String,
     played_playlists: Array,
@@ -25,6 +26,7 @@ const init_user = async (id: String, username:String, oAuth:String) => {
             username: username,
             id: id,
             socket: 0,
+            current_room: null,
             latest_connection: Date.now(),
             first_connection: Date.now(),
             played_playlists: [],
@@ -56,7 +58,6 @@ const get_user_by_id = async (id: string) => {
 const update_user = async (id:String, type:String, value?: String | Number) => {
     let filter;
     let update;
-    console.log('CHANGE')
     switch(type){
         case 'delete': 
             return new Promise((resolve, reject) => {

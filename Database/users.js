@@ -41,6 +41,7 @@ var user_schema = new mongoose.Schema({
     username: String,
     id: String,
     socket: String,
+    current_room: String,
     latest_connection: String,
     first_connection: String,
     played_playlists: Array,
@@ -60,6 +61,7 @@ var init_user = function (id, username, oAuth) { return __awaiter(_this, void 0,
                     username: username,
                     id: id,
                     socket: 0,
+                    current_room: null,
                     latest_connection: Date.now(),
                     first_connection: Date.now(),
                     played_playlists: [],
@@ -95,7 +97,6 @@ var get_user_by_id = function (id) { return __awaiter(_this, void 0, void 0, fun
 var update_user = function (id, type, value) { return __awaiter(_this, void 0, void 0, function () {
     var filter, update;
     return __generator(this, function (_a) {
-        console.log('CHANGE');
         switch (type) {
             case 'delete':
                 return [2 /*return*/, new Promise(function (resolve, reject) {
