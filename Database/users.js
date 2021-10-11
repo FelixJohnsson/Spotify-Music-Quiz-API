@@ -95,6 +95,7 @@ var get_user_by_id = function (id) { return __awaiter(_this, void 0, void 0, fun
 var update_user = function (id, type, value) { return __awaiter(_this, void 0, void 0, function () {
     var filter, update;
     return __generator(this, function (_a) {
+        console.log('CHANGE');
         switch (type) {
             case 'delete':
                 return [2 /*return*/, new Promise(function (resolve, reject) {
@@ -110,7 +111,6 @@ var update_user = function (id, type, value) { return __awaiter(_this, void 0, v
                         filter = { id: id };
                         update = { $set: { latest_connection: Date.now(), oAuth: value } };
                         user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, function (error, success) {
-                            console.log(success);
                             if (error)
                                 reject(error);
                             if (success)

@@ -115,7 +115,7 @@ app.get('/logged_in/:data', (req:any, res:any) => {
 });
 
 app.post('/update_user', (req:any, res:any) => {
-	const array_of_types = ['delete', 'login', 'join_room', 'correct_guess', 'incorrect_guess', 'rooms_won', 'rooms_lost', 'new_badge'];
+	const array_of_types = ['delete', 'login', 'join_room', 'correct_guess', 'incorrect_guess', 'rooms_won', 'rooms_lost', 'new_badge', 'socket_change'];
 	if(req.body.type === 'login'){req.body.value = uuid_v4()}
 	if(array_of_types.includes(req.body.type) && req.body.id.length > 0){
 		DB_users.update_user(req.body.id, req.body.type, req.body.value)

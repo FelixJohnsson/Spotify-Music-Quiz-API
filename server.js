@@ -82,7 +82,7 @@ app.get('/logged_in/:data', function (req, res) {
     debug.print_general_status("Logged in user " + 'ADMIN');
 });
 app.post('/update_user', function (req, res) {
-    var array_of_types = ['delete', 'login', 'join_room', 'correct_guess', 'incorrect_guess', 'rooms_won', 'rooms_lost', 'new_badge'];
+    var array_of_types = ['delete', 'login', 'join_room', 'correct_guess', 'incorrect_guess', 'rooms_won', 'rooms_lost', 'new_badge', 'socket_change'];
     if (req.body.type === 'login') {
         req.body.value = uuid_v4();
     }

@@ -56,7 +56,7 @@ const get_user_by_id = async (id: string) => {
 const update_user = async (id:String, type:String, value?: String | Number) => {
     let filter;
     let update;
-    
+    console.log('CHANGE')
     switch(type){
         case 'delete': 
             return new Promise((resolve, reject) => {
@@ -70,7 +70,6 @@ const update_user = async (id:String, type:String, value?: String | Number) => {
                 filter = { id: id };
                 update = { $set:{latest_connection: Date.now(), oAuth: value}};
                 user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
-                    console.log(success)
                     if(error) reject(error);
                     if(success) resolve(success);
                 }); 
@@ -138,7 +137,7 @@ const update_user = async (id:String, type:String, value?: String | Number) => {
         case 'socket_change':
             return new Promise((resolve, reject) => {
             filter = { id: id };
-            update = {  $set:{socket: value}};
+            update = { $set:{socket: value}};
     
             user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
                 if(error) reject(error);
