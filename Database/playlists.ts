@@ -9,7 +9,7 @@ const playlist_schema = new mongoose.Schema({
     number_of_plays: Number,
     number_of_songs: Number
 })
-const playlist_model = mongoose.model('playlist_collection', playlist_schema);
+const playlist_model = mongoose.model('playlists', playlist_schema);
 
 const get_recommended = async () => {
     return new Promise(resolve => {

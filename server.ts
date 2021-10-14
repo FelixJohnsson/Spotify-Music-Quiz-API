@@ -152,18 +152,17 @@ app.get('/get_recommended', (req:any, res:any) => {
 })
 
 app.post('/save_recommended', (req:any, res:any) => {
-	let URI = req.params.link.split('/')[4].split('?')[0];
+	let URI = req.body.URI;
 	axios(`https://api.spotify.com/v1/playlists/${URI}`, {
         headers: {
             Accept: "application/json",
-            Authorization: "Bearer " + req.params.token,
+            Authorization: "Bearer " + req.body.token,
             "Content-Type": "application/json"
         }
         })
-        .then((res:any) => res.json())
         .then((playlist_object:any) => {
-            DB_playlists.add_recommended(playlist_object)
-			res.send(create_success_object(200, playlist_object))
+            DB_playlists.add_recommended(playlist_object.data)
+			res.send(create_success_object(200, playlist_object.data))
 		})
 		.catch((err:any) => {
 			res.send(create_error_object(400, "Can't add recommended playlists.", err))

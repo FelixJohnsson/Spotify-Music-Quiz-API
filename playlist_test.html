@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Playlist test</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+
+<body>
+    <div id="output" style="display:flex; max-width: 800px; overflow-y: scroll;">
+
+    </div>
+    <button onclick="get_recommended()">Get recommended</button>
+</body>
+<script>
+    const output = document.getElementById('output');
+
+    const save_recommended = () => {
+        let data = {
+            URI: '2Ob2rWWwZxbz6yWuTmBd6T',
+            token: 'BQBOfTu0RWiNHQU6TEqbJL4cTvkQfagdmjU-6P5-qp1JSny2BNa_E2jxBLUsO3ftBa2ORb2Y3UszXczW4rCh497s4iBEJ7aCkLKWozc8Mbo8qXLSepcaCLGejE-1zdHua4ASv_WDql4VTk40xnaYhQBazb4jvgSidwWIvBLaqtmM6Ip1eQmexgTgZPfG2hRLfRQSt0pqBoMJIGVXv_V6g-uqME5wW9Uv66aINLkkHzjgJsohAQ0V5cQHmh_A4G0GBmm3838NdJCyi3Taynac7kU'
+        }
+        //https://open.spotify.com/playlist/2Ob2rWWwZxbz6yWuTmBd6T?si=163a08ddbe6e4ac7
+
+        fetch('http://localhost:5001/save_recommended', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => console.log(data))
+    }
+    
+    const get_recommended = () => {
+        fetch('http://localhost:5001/get_recommended', {
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => { 
+                data.content.forEach(item => {
+                    let img = document.createElement('img');
+                    img.src = item.img_src;
+                    img.style.height = '150px';
+                    let p = document.createElement('p');
+                    p.innerText = item.title;
+                    output.appendChild(img);
+                    output.appendChild(p)
+
+                })
+            })
+    }
+</script>
+
+</html>

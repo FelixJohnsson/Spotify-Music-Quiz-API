@@ -45,7 +45,7 @@ var playlist_schema = new mongoose.Schema({
     number_of_plays: Number,
     number_of_songs: Number
 });
-var playlist_model = mongoose.model('playlist_collection', playlist_schema);
+var playlist_model = mongoose.model('playlists', playlist_schema);
 var get_recommended = function () { return __awaiter(_this, void 0, void 0, function () {
     return __generator(this, function (_a) {
         return [2 /*return*/, new Promise(function (resolve) {
