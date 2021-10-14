@@ -1,5 +1,6 @@
-const debug = require('./debugging.js')
-const DB_users = require('./Database/users.js')
+const debug = require('./debugging.js');
+const DB_users = require('./Database/users.js');
+const DB_playlists = require('./Database/playlists.js');
 
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -76,7 +77,11 @@ const create_success_object = (statusCode:Number = 200, content:any) => {
 }
 
 
-
+//ENDPOINTS FOR USER
+//POST ADD_USER
+//GET GET_USER:ID
+//GET LOGGED_IN:DATA
+//POST UPDATE_USER
 
 
 app.post('/add_user', (req:any, res:any) => {
@@ -123,7 +128,7 @@ app.post('/update_user', (req:any, res:any) => {
 			res.send(create_success_object(200, data))
 		})
 		.catch(err => {
-			res.send(create_error_object(200, 'Error', err))
+			res.send(create_error_object(400, 'Error', err))
 		})
 	} else {
 		console.log('ERROR')
@@ -131,6 +136,39 @@ app.post('/update_user', (req:any, res:any) => {
 });
 
 
+//ENDPOINTS FOR PLAYLISTS
+// GET GET_RECOMMENDED
+// POST SAVE_RECOMMENDED
+
+app.get('/get_recommended', (req:any, res:any) => {
+
+	DB_playlists.get_recommended()
+	.then((data:object[]) => {
+		res.send(create_success_object(200, data))
+	})
+	.catch((err:any) => {
+		res.send(create_error_object(400, "Can't find recommended playlists.", err))
+	})
+})
+
+app.post('/save_recommended', (req:any, res:any) => {
+	let URI = req.params.link.split('/')[4].split('?')[0];
+	axios(`https://api.spotify.com/v1/playlists/${URI}`, {
+        headers: {
+            Accept: "application/json",
+            Authorization: "Bearer " + req.params.token,
+            "Content-Type": "application/json"
+        }
+        })
+        .then((res:any) => res.json())
+        .then((playlist_object:any) => {
+            DB_playlists.add_recommended(playlist_object)
+			res.send(create_success_object(200, playlist_object))
+		})
+		.catch((err:any) => {
+			res.send(create_error_object(400, "Can't add recommended playlists.", err))
+		})
+})
 
 const spotify = require('./spotify_functions.js')
 // SPOTIFY - Functions

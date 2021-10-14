@@ -1,5 +1,6 @@
 var debug = require('./debugging.js');
 var DB_users = require('./Database/users.js');
+var DB_playlists = require('./Database/playlists.js');
 var cors = require('cors');
 var cookieParser = require('cookie-parser');
 require('dotenv').config();
@@ -48,6 +49,11 @@ var create_success_object = function (statusCode, content) {
     };
     return success_object;
 };
+//ENDPOINTS FOR USER
+//POST ADD_USER
+//GET GET_USER:ID
+//GET LOGGED_IN:DATA
+//POST UPDATE_USER
 app.post('/add_user', function (req, res) {
     if (req.body.username != undefined && req.body.username.length > 0) {
         DB_users.init_user(req.body.id, req.body.username, uuid_v4())
@@ -91,12 +97,40 @@ app.post('/update_user', function (req, res) {
             .then(function (data) {
             res.send(create_success_object(200, data));
         })["catch"](function (err) {
-            res.send(create_error_object(200, 'Error', err));
+            res.send(create_error_object(400, 'Error', err));
         });
     }
     else {
         console.log('ERROR');
     }
+});
+//ENDPOINTS FOR PLAYLISTS
+// GET GET_RECOMMENDED
+// POST SAVE_RECOMMENDED
+app.get('/get_recommended', function (req, res) {
+    DB_playlists.get_recommended()
+        .then(function (data) {
+        res.send(create_success_object(200, data));
+    })["catch"](function (err) {
+        res.send(create_error_object(400, "Can't find recommended playlists.", err));
+    });
+});
+app.post('/save_recommended', function (req, res) {
+    var URI = req.params.link.split('/')[4].split('?')[0];
+    axios("https://api.spotify.com/v1/playlists/" + URI, {
+        headers: {
+            Accept: "application/json",
+            Authorization: "Bearer " + req.params.token,
+            "Content-Type": "application/json"
+        }
+    })
+        .then(function (res) { return res.json(); })
+        .then(function (playlist_object) {
+        DB_playlists.add_recommended(playlist_object);
+        res.send(create_success_object(200, playlist_object));
+    })["catch"](function (err) {
+        res.send(create_error_object(400, "Can't add recommended playlists.", err));
+    });
 });
 var spotify = require('./spotify_functions.js');
 // SPOTIFY - Functions
