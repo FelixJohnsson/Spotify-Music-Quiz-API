@@ -9,7 +9,10 @@
 </head>
 
 <body>
-    <div id="output" style="display:flex; max-width: 800px; overflow-y: scroll;">
+    <input type="text" id="playlist_input" placeholder="Playlist link">
+    <input type="text" id="token_input" placeholder="Token">
+    <button onclick="save_recommended()">Save</button>
+    <div id="output" style="display:flex; max-width: 800px; overflow-x: scroll; overflow-y: hidden;">
 
     </div>
     <button onclick="get_recommended()">Get recommended</button>
@@ -18,9 +21,12 @@
     const output = document.getElementById('output');
 
     const save_recommended = () => {
+        const link = document.getElementById('playlist_input').value;
+        const token = document.getElementById('token_input').value;
+        const URI = link.split('/')[4].split('?')[0];
         let data = {
-            URI: '2Ob2rWWwZxbz6yWuTmBd6T',
-            token: 'BQBOfTu0RWiNHQU6TEqbJL4cTvkQfagdmjU-6P5-qp1JSny2BNa_E2jxBLUsO3ftBa2ORb2Y3UszXczW4rCh497s4iBEJ7aCkLKWozc8Mbo8qXLSepcaCLGejE-1zdHua4ASv_WDql4VTk40xnaYhQBazb4jvgSidwWIvBLaqtmM6Ip1eQmexgTgZPfG2hRLfRQSt0pqBoMJIGVXv_V6g-uqME5wW9Uv66aINLkkHzjgJsohAQ0V5cQHmh_A4G0GBmm3838NdJCyi3Taynac7kU'
+            URI: URI,
+            token: token
         }
         //https://open.spotify.com/playlist/2Ob2rWWwZxbz6yWuTmBd6T?si=163a08ddbe6e4ac7
 

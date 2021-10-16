@@ -26,6 +26,7 @@
     "ts-node": "^10.2.1"
   },
   "scripts": {
+    "start": "nodemon server.js",
     "test": "mocha -r ts-node/register ./test/test.js"
   }
 }

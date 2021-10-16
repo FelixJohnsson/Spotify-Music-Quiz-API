@@ -48,10 +48,24 @@ var playlist_schema = new mongoose.Schema({
 var playlist_model = mongoose.model('playlists', playlist_schema);
 var get_recommended = function () { return __awaiter(_this, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        return [2 /*return*/, new Promise(function (resolve) {
+        return [2 /*return*/, new Promise(function (resolve, reject) {
                 playlist_model.find({}, function (error, success) {
                     if (error)
-                        resolve(error);
+                        reject(error);
+                    if (success)
+                        resolve(success);
+                });
+            })];
+    });
+}); };
+var search_recommended = function (URI) { return __awaiter(_this, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        console.log(URI);
+        console.log(typeof URI);
+        return [2 /*return*/, new Promise(function (resolve, reject) {
+                playlist_model.find({ URI: URI }, function (error, success) {
+                    if (error)
+                        reject(error);
                     if (success)
                         resolve(success);
                 });
@@ -69,10 +83,10 @@ var add_recommended = function (playlist_object) { return __awaiter(_this, void 
             number_of_plays: 0,
             number_of_songs: playlist_object.tracks.items.length
         });
-        return [2 /*return*/, new Promise(function (resolve) {
+        return [2 /*return*/, new Promise(function (resolve, reject) {
                 new_playlist.save({}, function (error, success) {
                     if (error)
-                        resolve(error);
+                        reject(error);
                     if (success)
                         resolve(success);
                 });
@@ -81,5 +95,6 @@ var add_recommended = function (playlist_object) { return __awaiter(_this, void 
 }); };
 module.exports = {
     get_recommended: get_recommended,
+    search_recommended: search_recommended,
     add_recommended: add_recommended
 };

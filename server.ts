@@ -9,20 +9,22 @@ require('dotenv').config();
 const querystring = require('querystring');
 const request = require('request');
 const ss = require("string-similarity");
-const { v4: uuid_v4 } = require('uuid');
+const {
+	v4: uuid_v4
+} = require('uuid');
 const axios = require('axios');
 
 //DATABASE - MongoDB & Mongoose
 //@ts-ignore
 const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGO, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then((res:any) => {
-	debug.print_success_status('Connected to MongoDB.');
-})
-.catch((err:any) => debug.print_error_status('Failed to connect to MongoDB.'))
+		useNewUrlParser: true,
+		useUnifiedTopology: true
+	})
+	.then((res: any) => {
+		debug.print_success_status('Connected to MongoDB.');
+	})
+	.catch((err: any) => debug.print_error_status('Failed to connect to MongoDB.'))
 
 //SERVER -  Express
 const express = require('express');
@@ -30,9 +32,11 @@ const router = express.Router();
 const app = require('express')();
 const bodyParser = require('body-parser');
 app.use(express.static("public"))
-    .use(cors())
-    .use(cookieParser())
-	.use(bodyParser.urlencoded({ extended: false }))
+	.use(cors())
+	.use(cookieParser())
+	.use(bodyParser.urlencoded({
+		extended: false
+	}))
 	.use(bodyParser.json());
 
 const server = app.listen(process.env.PORT, () => {
@@ -41,39 +45,39 @@ const server = app.listen(process.env.PORT, () => {
 
 
 interface New_user {
-	username:string,
-	id:string,
-    password:string,
-    latest_login_string:string,
-	latest_login_number: number,
-    login_token:string,
-    played_playlists:string[],
-	uuid:string
+	username: string,
+		id: string,
+		password: string,
+		latest_login_string: string,
+		latest_login_number: number,
+		login_token: string,
+		played_playlists: string[],
+		uuid: string
 }
 interface Error_object {
-	statusCode:Number,
-	error_message:String,
-	content:Object,
+	statusCode: Number,
+		error_message: String,
+		content: Object,
 }
 interface Success_object {
-	statusCode:Number,
-	content:Object,
+	statusCode: Number,
+		content: Object,
 }
 
-const create_error_object = (statusCode:Number = 400, error_message:String, content?:any) => {
-    let error_object:Error_object = {
-        statusCode: statusCode,
-        error_message: error_message,
-        content: content
-    }
-    return error_object;
+const create_error_object = (statusCode: Number = 400, error_message: String, content ? : any) => {
+	let error_object: Error_object = {
+		statusCode: statusCode,
+		error_message: error_message,
+		content: content
+	}
+	return error_object;
 }
-const create_success_object = (statusCode:Number = 200, content:any) => {
-    let success_object:Success_object = {
-        statusCode: statusCode,
-        content: content
-    }
-    return success_object;
+const create_success_object = (statusCode: Number = 200, content: any) => {
+	let success_object: Success_object = {
+		statusCode: statusCode,
+		content: content
+	}
+	return success_object;
 }
 
 
@@ -84,52 +88,54 @@ const create_success_object = (statusCode:Number = 200, content:any) => {
 //POST UPDATE_USER
 
 
-app.post('/add_user', (req:any, res:any) => {
-	if(req.body.username != undefined && req.body.username.length > 0){
+app.post('/add_user', (req: any, res: any) => {
+	if (req.body.username != undefined && req.body.username.length > 0) {
 		DB_users.init_user(req.body.id, req.body.username, uuid_v4())
-		.then(data => {
-			res.send(create_success_object(200, data))
-			debug.print_success_status(`Added user ${data.username}`);
-		})
+			.then(data => {
+				res.send(create_success_object(200, data))
+				debug.print_success_status(`Added user ${data.username}`);
+			})
 	} else {
 		res.send(create_error_object(400, "Couldn't add user, insufficient data received."));
 		debug.print_error_status(`Failed to add user.`);
 	}
 });
 
-app.get('/get_user/:id', (req:any, res:any) => {
+app.get('/get_user/:id', (req: any, res: any) => {
 	DB_users.get_user_by_id(req.params.id)
-	.then(data => {
-		res.send(create_success_object(200, data[0]))
-		debug.print_general_status(`Found user ${req.params.id}`);
-	})
+		.then(data => {
+			res.send(create_success_object(200, data[0]))
+			debug.print_general_status(`Found user ${req.params.id}`);
+		})
 });
 
-app.get('/logged_in/:data', (req:any, res:any) => {
-		const data = req.params.data.split('&');
-		let user_info = {
-			access_token: data[0].split('=')[1],
-			refresh_token: data[1].split('=')[1],
-			id: data[2].split('=')[1],
-			username: data[3].split('=')[1],
-			oAuth: uuid_v4()
-		}
-		DB_users.update_user(user_info.id, 'login', user_info.oAuth);
-		res.send(create_success_object(200, data));
-		debug.print_general_status(`Logged in user ${'ADMIN'}`);
+app.get('/logged_in/:data', (req: any, res: any) => {
+	const data = req.params.data.split('&');
+	let user_info = {
+		access_token: data[0].split('=')[1],
+		refresh_token: data[1].split('=')[1],
+		id: data[2].split('=')[1],
+		username: data[3].split('=')[1],
+		oAuth: uuid_v4()
+	}
+	DB_users.update_user(user_info.id, 'login', user_info.oAuth);
+	res.send(create_success_object(200, data));
+	debug.print_general_status(`Logged in user ${'ADMIN'}`);
 });
 
-app.post('/update_user', (req:any, res:any) => {
+app.post('/update_user', (req: any, res: any) => {
 	const array_of_types = ['delete', 'login', 'join_room', 'correct_guess', 'incorrect_guess', 'rooms_won', 'rooms_lost', 'new_badge', 'socket_change'];
-	if(req.body.type === 'login'){req.body.value = uuid_v4()}
-	if(array_of_types.includes(req.body.type) && req.body.id.length > 0){
+	if (req.body.type === 'login') {
+		req.body.value = uuid_v4()
+	}
+	if (array_of_types.includes(req.body.type) && req.body.id.length > 0) {
 		DB_users.update_user(req.body.id, req.body.type, req.body.value)
-		.then(data =>{
-			res.send(create_success_object(200, data))
-		})
-		.catch(err => {
-			res.send(create_error_object(400, 'Error', err))
-		})
+			.then(data => {
+				res.send(create_success_object(200, data))
+			})
+			.catch(err => {
+				res.send(create_error_object(400, 'Error', err))
+			})
 	} else {
 		console.log('ERROR')
 	}
@@ -140,33 +146,43 @@ app.post('/update_user', (req:any, res:any) => {
 // GET GET_RECOMMENDED
 // POST SAVE_RECOMMENDED
 
-app.get('/get_recommended', (req:any, res:any) => {
+app.get('/get_recommended', (req: any, res: any) => {
 
 	DB_playlists.get_recommended()
-	.then((data:object[]) => {
-		res.send(create_success_object(200, data))
-	})
-	.catch((err:any) => {
-		res.send(create_error_object(400, "Can't find recommended playlists.", err))
-	})
+		.then((data: object[]) => {
+			res.send(create_success_object(200, data))
+		})
+		.catch((err: any) => {
+			res.send(create_error_object(400, "Can't find recommended playlists.", err))
+		})
 })
 
-app.post('/save_recommended', (req:any, res:any) => {
-	let URI = req.body.URI;
-	axios(`https://api.spotify.com/v1/playlists/${URI}`, {
-        headers: {
-            Accept: "application/json",
-            Authorization: "Bearer " + req.body.token,
-            "Content-Type": "application/json"
-        }
-        })
-        .then((playlist_object:any) => {
-            DB_playlists.add_recommended(playlist_object.data)
-			res.send(create_success_object(200, playlist_object.data))
+app.post('/save_recommended', async (req: any, res: any) => {
+	//NEEDS TO CHECK IF ALREADY EXIST
+	const URI = req.body.URI;
+	DB_playlists.search_recommended(URI)
+		.then(data => {
+			if (data.length > 0) {
+				res.send(create_error_object(400, "That playlist already exists in recommended."))
+			} else {
+				axios(`https://api.spotify.com/v1/playlists/${URI}`, {
+						headers: {
+							Accept: "application/json",
+							Authorization: "Bearer " + req.body.token,
+							"Content-Type": "application/json"
+						}
+					})
+					.then((playlist_object: any) => {
+						DB_playlists.add_recommended(playlist_object.data)
+						res.send(create_success_object(200, playlist_object.data))
+					})
+					.catch((err: any) => {
+						res.send(create_error_object(400, "Can't add recommended playlists.", err))
+					})
+			}
 		})
-		.catch((err:any) => {
-			res.send(create_error_object(400, "Can't add recommended playlists.", err))
-		})
+
+
 })
 
 const spotify = require('./spotify_functions.js')
@@ -176,7 +192,7 @@ const client_secret = '9b029b88d0364f1590456f0e2f11dd5c'; // Your secret
 const redirect_uri = 'http://localhost:5000/callback'; // Your redirect uri
 const stateKey = 'spotify_auth_state';
 
-app.get('/login', function (req: Request, res:any) {
+app.get('/login', function (req: Request, res: any) {
 
 	const state = spotify.generateRandomString(16);
 	res.cookie(stateKey, state);
@@ -207,7 +223,7 @@ app.get('/login', function (req: Request, res:any) {
 });
 
 
-app.get('/callback', (req:any, res:any):void => {
+app.get('/callback', (req: any, res: any): void => {
 
 	// your application requests refresh and access tokens
 	// after checking the state parameter
@@ -232,43 +248,43 @@ app.get('/callback', (req:any, res:any):void => {
 			},
 			headers: {
 				// @ts-ignore  ??? - Only a void function can be called with the 'new' keyword.
-				'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64')) 
+				'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64'))
 			},
 			json: true
 		};
 
-		request.post(authOptions, (error:any, response:any, body:any) => {
+		request.post(authOptions, (error: any, response: any, body: any) => {
 			if (!error && response.statusCode === 200) {
 
 
 				let access_token = body.access_token,
-				refresh_token = body.refresh_token;
-			
+					refresh_token = body.refresh_token;
+
 				// we can also pass the token to the browser to make requests from there
 				axios("https://api.spotify.com/v1/me", {
-					headers: {
-						Accept: "application/json",
-						Authorization: "Bearer " + access_token,
-						"Content-Type": "application/json"
-					}
-				})
+						headers: {
+							Accept: "application/json",
+							Authorization: "Bearer " + access_token,
+							"Content-Type": "application/json"
+						}
+					})
 					.then((response) => {
-                    res.redirect('/logged_in/' +
-                        querystring.stringify({
-                            access_token: access_token,
-                            refresh_token: refresh_token,
-                            id: response.data.id,
-                            username: response.data.display_name
-                        }));
-                    debug.print_success_login('User successfully logged in');
-				})
-				.catch(() => debug.print_error_login('User unsuccessfully logged in'))
+						res.redirect('/logged_in/' +
+							querystring.stringify({
+								access_token: access_token,
+								refresh_token: refresh_token,
+								id: response.data.id,
+								username: response.data.display_name
+							}));
+						debug.print_success_login('User successfully logged in');
+					})
+					.catch(() => debug.print_error_login('User unsuccessfully logged in'))
 			} else {
 				res.redirect('/#' +
 					querystring.stringify({
 						error: 'invalid_token'
 					}));
-					debug.print_error_login('User unsuccessfully logged in');
+				debug.print_error_login('User unsuccessfully logged in');
 			}
 		});
 	}
@@ -304,8 +320,8 @@ app.get('/refresh_token/:token', (req:any, res:any) => {
 
 });
 */
-const calc = (a,b) => {
-	return a*b;
+const calc = (a, b) => {
+	return a * b;
 }
 
 module.exports = {
