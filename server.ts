@@ -1,6 +1,7 @@
 const debug = require('./debugging.js');
 const DB_users = require('./Database/users.js');
 const DB_playlists = require('./Database/playlists.js');
+const DB_rooms = require('./Database/rooms.js');
 
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -42,7 +43,6 @@ app.use(express.static("public"))
 const server = app.listen(process.env.PORT, () => {
 	debug.print_success_status('Connected to: ' + process.env.PORT);
 });
-
 
 interface New_user {
 	username: string,
@@ -158,7 +158,6 @@ app.get('/get_recommended', (req: any, res: any) => {
 })
 
 app.post('/save_recommended', async (req: any, res: any) => {
-	//NEEDS TO CHECK IF ALREADY EXIST
 	const URI = req.body.URI;
 	DB_playlists.search_recommended(URI)
 		.then(data => {
@@ -174,16 +173,40 @@ app.post('/save_recommended', async (req: any, res: any) => {
 					})
 					.then((playlist_object: any) => {
 						DB_playlists.add_recommended(playlist_object.data)
-						res.send(create_success_object(200, playlist_object.data))
+						.then(data => res.send(create_success_object(200, data))); 
 					})
 					.catch((err: any) => {
 						res.send(create_error_object(400, "Can't add recommended playlists.", err))
 					})
 			}
 		})
+})
 
+app.post('/change_room', async (req:any, res:any) => {
 
 })
+
+app.post('/init_new_room', async (req:any, res:any) => {
+	const playlist_URI = req.body.URI;
+	const token = req.body.token;
+	const user_id = req.body.id;
+
+	axios(`https://api.spotify.com/v1/playlists/${playlist_URI}`,{
+		headers: {
+			Accept: "application/json",
+			Authorization: "Bearer " + token,
+			"Content-Type": "application/json"
+		  }
+	})
+	.then(data => {
+		DB_rooms.create_new_room(data.data, user_id)
+		.then(data => res.send(create_success_object(200, data)))
+		
+	})
+	.catch(err => res.send(create_error_object(400, "Can't find that playlist.", err)))
+})
+
+
 
 const spotify = require('./spotify_functions.js')
 // SPOTIFY - Functions

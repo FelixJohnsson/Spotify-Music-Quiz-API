@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Room test</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+<body>
+    <button onclick="init_new_room()">Init new room</button>
+    <div id="room_output">
+
+    </div>
+</body>
+<script>
+    const init_new_room = () => {
+        const body = {
+            URI:'2Ob2rWWwZxbz6yWuTmBd6T',
+            token: 'BQAvV1Mxrvl_7LUuuyguAgb53Bxgs6IgfF3oQTYPSN2t8m33U_o0y8cVJH8IMXrJGlr2mPsK0MRRIvUvZjkc9GoLLLXDsKbCMEyitczKTKp4ZjfNHiHOmMiCJv2YXhMcoUDlwxDj_fB7AS1cTDwClbvbwwdpFTDyOXqhQRO9wJ2s1ZTiBAUr80BfPDqu_-NJQ35lmJvGmsgPVlyoQwPtHFJuk59SEGI5fa96evolj0vzoteJ9Csae95CKpffy1wDF_7pe11gm8hnk_pWoiGXkyw',
+            id:'felle21'
+        }
+        fetch('http://localhost:5000/init_new_room', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+                const div = document.getElementById('room_output');
+                const p = document.createElement('p');
+                const id = document.createTextNode('Room number: ' + data.content.id);
+                p.appendChild(id);
+                div.appendChild(p);
+                data.content.songs.forEach(object => {
+                    const track_name = document.createTextNode('Song name: ' + object.track.name);
+                    const img = document.createElement('img');
+                    img.src = object.track.album.images[0].url;
+                    img.style.height = '100px';
+                    const artist_name = document.createTextNode('Artist name: ' + object.track.artists[0].name);
+                    const br = document.createElement('br');
+                    p.appendChild(track_name);
+                    div.appendChild(p);
+
+                    p.appendChild(artist_name);
+                    div.appendChild(p);
+
+                    div.appendChild(img)
+                })
+            })
+    }
+</script>
+</html>

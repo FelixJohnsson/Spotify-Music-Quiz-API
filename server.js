@@ -38,6 +38,7 @@ var _this = this;
 var debug = require('./debugging.js');
 var DB_users = require('./Database/users.js');
 var DB_playlists = require('./Database/playlists.js');
+var DB_rooms = require('./Database/rooms.js');
 var cors = require('cors');
 var cookieParser = require('cookie-parser');
 require('dotenv').config();
@@ -172,13 +173,38 @@ app.post('/save_recommended', function (req, res) { return __awaiter(_this, void
                     }
                 })
                     .then(function (playlist_object) {
-                    DB_playlists.add_recommended(playlist_object.data);
-                    res.send(create_success_object(200, playlist_object.data));
+                    DB_playlists.add_recommended(playlist_object.data)
+                        .then(function (data) { return res.send(create_success_object(200, data)); });
                 })["catch"](function (err) {
                     res.send(create_error_object(400, "Can't add recommended playlists.", err));
                 });
             }
         });
+        return [2 /*return*/];
+    });
+}); });
+app.post('/change_room', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        return [2 /*return*/];
+    });
+}); });
+app.post('/init_new_room', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var playlist_URI, token, user_id;
+    return __generator(this, function (_a) {
+        playlist_URI = req.body.URI;
+        token = req.body.token;
+        user_id = req.body.id;
+        axios("https://api.spotify.com/v1/playlists/" + playlist_URI, {
+            headers: {
+                Accept: "application/json",
+                Authorization: "Bearer " + token,
+                "Content-Type": "application/json"
+            }
+        })
+            .then(function (data) {
+            DB_rooms.create_new_room(data.data, user_id)
+                .then(function (data) { return res.send(create_success_object(200, data)); });
+        })["catch"](function (err) { return res.send(create_error_object(400, "Can't find that playlist.", err)); });
         return [2 /*return*/];
     });
 }); });

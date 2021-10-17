@@ -94,3 +94,6 @@ describe('Spotify endpoint tests', () => {
     return expect(fetching()).to.eventually.not.be.an('undefined')
   })
 })
+
+
+//ADD TESTS FOR RECOMMENDED PLAYLISTS

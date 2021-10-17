@@ -27,6 +27,7 @@
   },
   "scripts": {
     "start": "nodemon server.js",
-    "test": "mocha -r ts-node/register ./test/test.js"
+    "test": "mocha -r ts-node/register ./test/test.js",
+    "dev":"tsc.cmd --w server.ts Database/playlists.ts Database/users.ts Database/rooms.ts"
   }
 }
