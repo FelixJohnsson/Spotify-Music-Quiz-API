@@ -202,27 +202,45 @@ app.post('/init_new_room', async (req:any, res:any) => {
 		DB_rooms.create_new_room(data.data, user_id)
 		.then(data => res.send(create_success_object(200, data)))
 	})
-	.catch(err => res.send(create_error_object(400, "Can't find that playlist.", err)))
+	.catch(err => res.send(create_error_object(400, "Can't find that playlist or your token has expired.", err)))
 })
 
 app.post('/update_room', async (req:any, res:any) => {
 	const token = req.body.token;
 	const user_id = req.body.id;
 	const room_id = req.body.room_id;
-
+	const type = req.body.type;
 
 })
 app.get('/get_room/:id', async (req:any, res:any) => {
-	//ERROR HANDLING
-	DB_rooms.get_room(req.params.id)
-	.then(data => {
-		if(data.length > 0){
-			res.send(create_success_object(200, data));
-		} else {
-			res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
-		}
-	})
-	
+	const room_id = parseInt(req.params.id);
+	if(Number.isInteger(room_id)){
+		DB_rooms.get_room(req.params.id)
+		.then(data => {
+			if(data.length > 0){
+				res.send(create_success_object(200, data));
+			} else {
+				res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
+			}
+		})
+	} else {
+		res.send(create_error_object(401, "Room ID isn't a number."))
+	}
+})
+app.get('/delete_room/:id', async (req:any, res:any) => {
+	const room_id = parseInt(req.params.id);
+	if(Number.isInteger(room_id)){
+		DB_rooms.delete_room(req.params.id)
+		.then(data => {
+			if(data.deletedCount === 1){
+				res.send(create_success_object(200, {msg: 'Deleted.', data},));
+			} else {
+				res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
+			}
+		})
+	} else {
+		res.send(create_error_object(401, "Room ID isn't a number."))
+	}
 })
 
 

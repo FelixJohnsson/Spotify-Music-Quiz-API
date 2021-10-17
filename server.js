@@ -204,31 +204,59 @@ app.post('/init_new_room', function (req, res) { return __awaiter(_this, void 0,
             .then(function (data) {
             DB_rooms.create_new_room(data.data, user_id)
                 .then(function (data) { return res.send(create_success_object(200, data)); });
-        })["catch"](function (err) { return res.send(create_error_object(400, "Can't find that playlist.", err)); });
+        })["catch"](function (err) { return res.send(create_error_object(400, "Can't find that playlist or your token has expired.", err)); });
         return [2 /*return*/];
     });
 }); });
 app.post('/update_room', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var token, user_id, room_id;
+    var token, user_id, room_id, type;
     return __generator(this, function (_a) {
         token = req.body.token;
         user_id = req.body.id;
         room_id = req.body.room_id;
+        type = req.body.type;
         return [2 /*return*/];
     });
 }); });
 app.get('/get_room/:id', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var room_id;
     return __generator(this, function (_a) {
-        //ERROR HANDLING
-        DB_rooms.get_room(req.params.id)
-            .then(function (data) {
-            if (data.length > 0) {
-                res.send(create_success_object(200, data));
-            }
-            else {
-                res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
-            }
-        });
+        room_id = parseInt(req.params.id);
+        if (Number.isInteger(room_id)) {
+            DB_rooms.get_room(req.params.id)
+                .then(function (data) {
+                if (data.length > 0) {
+                    res.send(create_success_object(200, data));
+                }
+                else {
+                    res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
+                }
+            });
+        }
+        else {
+            res.send(create_error_object(401, "Room ID isn't a number."));
+        }
+        return [2 /*return*/];
+    });
+}); });
+app.get('/delete_room/:id', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var room_id;
+    return __generator(this, function (_a) {
+        room_id = parseInt(req.params.id);
+        if (Number.isInteger(room_id)) {
+            DB_rooms.delete_room(req.params.id)
+                .then(function (data) {
+                if (data.deletedCount === 1) {
+                    res.send(create_success_object(200, { msg: 'Deleted.', data: data }));
+                }
+                else {
+                    res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
+                }
+            });
+        }
+        else {
+            res.send(create_error_object(401, "Room ID isn't a number."));
+        }
         return [2 /*return*/];
     });
 }); });
