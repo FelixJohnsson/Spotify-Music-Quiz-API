@@ -125,8 +125,57 @@ var delete_room = function (id) { return __awaiter(_this, void 0, void 0, functi
             })];
     });
 }); };
+var add_player = function (id, new_player_object) {
+    return new Promise(function (resolve, reject) {
+        var update = { $push: { players: new_player_object } };
+        room_model.findOneAndUpdate({ id: id }, update, { useFindAndModify: false, returnOriginal: false }, function (error, success) {
+            if (error)
+                reject(error);
+            if (success)
+                resolve(success);
+        });
+    });
+};
+var remove_player = function (room_id, display_name) { return __awaiter(_this, void 0, void 0, function () {
+    var _this = this;
+    return __generator(this, function (_a) {
+        return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                var room_object, filter, update, rest_of_players;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, get_room(room_id)];
+                        case 1:
+                            room_object = _a.sent();
+                            if (room_object.length === 0) {
+                                reject(400);
+                            }
+                            ;
+                            if (!room_object[0].players.includes(display_name))
+                                reject(401);
+                            rest_of_players = room_object[0].players.filter(function (user) { return user.display_name != display_name; });
+                            if (rest_of_players.length === 0) {
+                                delete_room(room_id);
+                            }
+                            else {
+                                filter = { id: room_id };
+                                update = { $set: { "players": rest_of_players } };
+                            }
+                            room_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, function (error, success) {
+                                if (error)
+                                    reject(error);
+                                if (success)
+                                    resolve(success);
+                            });
+                            return [2 /*return*/];
+                    }
+                });
+            }); })];
+    });
+}); };
 module.exports = {
     create_new_room: create_new_room,
     delete_room: delete_room,
-    get_room: get_room
+    get_room: get_room,
+    add_player: add_player,
+    remove_player: remove_player
 };

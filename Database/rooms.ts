@@ -21,6 +21,22 @@ const room_schema = new mongoose.Schema({
     progress_ms: Number,
     first_connection: Date,
 })
+
+interface User {
+    id:String,
+    username:String,
+    latest_connection: Date,
+    first_connection: Date,
+    played_playlists: [String],
+    number_of_badges: Number,
+    badges: [String],
+    correct_guesses: Number,
+    incorrect_guesses: Number,
+    rooms_won: Number,
+    rooms_lost: Number,
+    oAuth: String
+}
+
 const room_model = mongoose.model('rooms', room_schema);
 
 const create_new_room = async (playlist_object:any, display_name:String) => {
@@ -79,14 +95,46 @@ const delete_room = async (id:String) => {
     })
 }
 
+const add_player = (id:String, new_player_object:User) => {
+    return new Promise((resolve, reject) => {
+        let update = { $push: {players: new_player_object}};
+        room_model.findOneAndUpdate({ id: id }, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
+            if(error) reject(error);
+            if(success) resolve(success);
+        }); 
+    })
+}
+const remove_player = async (room_id:String, display_name:String) => {
+    return new Promise(async (resolve, reject) => {
+    let room_object:any = await get_room(room_id);
+    if(room_object.length === 0) {
+        reject(400);
+    };
+    if(!room_object[0].players.includes(display_name)) reject(401);
+    let filter;
+    let update;
+    const rest_of_players = room_object[0].players.filter(user => user.display_name != display_name);
+        if(rest_of_players.length === 0){
+            delete_room(room_id);
+        } else {
+            filter = { id: room_id };
+            update = { $set: {"players": rest_of_players}};
+        }
+
+        room_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
+            if(error) reject(error);
+            if(success) resolve(success);
+        }); 
+    })
+}
 
 module.exports = {
     create_new_room,
     delete_room,
     get_room,
-      /*
+      
     add_player,
     remove_player,
-    update_room
-    */
+    //update_room
+    
 }
