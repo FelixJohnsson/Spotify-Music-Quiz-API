@@ -62,13 +62,29 @@ const create_new_room = async (playlist_object:any, display_name:String) => {
     })
 }
 
+const get_room = async (id:String) => {
+    return new Promise((resolve, reject) => {
+        room_model.find({id:id}, (error:any, success:any) => {
+            if (error) reject(error);
+            if (success) resolve(success);
+        })
+    })
+}
+const delete_room = async (id:String) => {
+    return new Promise((resolve, reject) => {
+        room_model.deleteOne({ id: id }, (error: any, success:any) => {
+            if(error) reject(error);
+            if(success) resolve(success);
+          });
+    })
+}
 
 
 module.exports = {
     create_new_room,
-    /*
     delete_room,
     get_room,
+      /*
     add_player,
     remove_player,
     update_room

@@ -101,6 +101,32 @@ var create_new_room = function (playlist_object, display_name) { return __awaite
             })];
     });
 }); };
+var get_room = function (id) { return __awaiter(_this, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        return [2 /*return*/, new Promise(function (resolve, reject) {
+                room_model.find({ id: id }, function (error, success) {
+                    if (error)
+                        reject(error);
+                    if (success)
+                        resolve(success);
+                });
+            })];
+    });
+}); };
+var delete_room = function (id) { return __awaiter(_this, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        return [2 /*return*/, new Promise(function (resolve, reject) {
+                room_model.deleteOne({ id: id }, function (error, success) {
+                    if (error)
+                        reject(error);
+                    if (success)
+                        resolve(success);
+                });
+            })];
+    });
+}); };
 module.exports = {
-    create_new_room: create_new_room
+    create_new_room: create_new_room,
+    delete_room: delete_room,
+    get_room: get_room
 };

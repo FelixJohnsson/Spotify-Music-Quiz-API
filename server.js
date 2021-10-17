@@ -208,6 +208,30 @@ app.post('/init_new_room', function (req, res) { return __awaiter(_this, void 0,
         return [2 /*return*/];
     });
 }); });
+app.post('/update_room', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var token, user_id, room_id;
+    return __generator(this, function (_a) {
+        token = req.body.token;
+        user_id = req.body.id;
+        room_id = req.body.room_id;
+        return [2 /*return*/];
+    });
+}); });
+app.get('/get_room/:id', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        //ERROR HANDLING
+        DB_rooms.get_room(req.params.id)
+            .then(function (data) {
+            if (data.length > 0) {
+                res.send(create_success_object(200, data));
+            }
+            else {
+                res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
+            }
+        });
+        return [2 /*return*/];
+    });
+}); });
 var spotify = require('./spotify_functions.js');
 // SPOTIFY - Functions
 var client_id = '94ac88d39834494da4f490e1b0cb0ef2'; // Your client id

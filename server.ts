@@ -201,11 +201,29 @@ app.post('/init_new_room', async (req:any, res:any) => {
 	.then(data => {
 		DB_rooms.create_new_room(data.data, user_id)
 		.then(data => res.send(create_success_object(200, data)))
-		
 	})
 	.catch(err => res.send(create_error_object(400, "Can't find that playlist.", err)))
 })
 
+app.post('/update_room', async (req:any, res:any) => {
+	const token = req.body.token;
+	const user_id = req.body.id;
+	const room_id = req.body.room_id;
+
+
+})
+app.get('/get_room/:id', async (req:any, res:any) => {
+	//ERROR HANDLING
+	DB_rooms.get_room(req.params.id)
+	.then(data => {
+		if(data.length > 0){
+			res.send(create_success_object(200, data));
+		} else {
+			res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
+		}
+	})
+	
+})
 
 
 const spotify = require('./spotify_functions.js')
