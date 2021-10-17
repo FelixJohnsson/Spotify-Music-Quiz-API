@@ -31,23 +31,22 @@
                 console.log(data)
                 const div = document.getElementById('room_output');
                 const p = document.createElement('p');
+                p.style.fontSize = '20px';
                 const id = document.createTextNode('Room number: ' + data.content.id);
                 p.appendChild(id);
                 div.appendChild(p);
+
+                
                 data.content.songs.forEach(object => {
-                    const track_name = document.createTextNode('Song name: ' + object.track.name);
                     const img = document.createElement('img');
                     img.src = object.track.album.images[0].url;
                     img.style.height = '100px';
-                    const artist_name = document.createTextNode('Artist name: ' + object.track.artists[0].name);
-                    const br = document.createElement('br');
-                    p.appendChild(track_name);
-                    div.appendChild(p);
+                    div.appendChild(img);
 
-                    p.appendChild(artist_name);
-                    div.appendChild(p);
-
-                    div.appendChild(img)
+                    const track_name_t = document.createTextNode('Song name: ' + object.track.name + ' by: ' + object.track.artists[0].name);
+                    const track_name_p = document.createElement('p')
+                    track_name_p.appendChild(track_name_t);
+                    div.appendChild(track_name_p);
                 })
             })
     }
