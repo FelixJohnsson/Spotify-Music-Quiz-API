@@ -89,11 +89,6 @@ var create_success_object = function (statusCode, content) {
     };
     return success_object;
 };
-//ENDPOINTS FOR USER
-//POST ADD_USER
-//GET GET_USER:ID
-//GET LOGGED_IN:DATA
-//POST UPDATE_USER
 app.post('/add_user', function (req, res) {
     if (req.body.username != undefined && req.body.username.length > 0) {
         DB_users.init_user(req.body.id, req.body.username, uuid_v4())
@@ -144,9 +139,6 @@ app.post('/update_user', function (req, res) {
         console.log('ERROR');
     }
 });
-//ENDPOINTS FOR PLAYLISTS
-// GET GET_RECOMMENDED
-// POST SAVE_RECOMMENDED
 app.get('/get_recommended', function (req, res) {
     DB_playlists.get_recommended()
         .then(function (data) {
@@ -180,11 +172,6 @@ app.post('/save_recommended', function (req, res) { return __awaiter(_this, void
                 });
             }
         });
-        return [2 /*return*/];
-    });
-}); });
-app.post('/change_room', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    return __generator(this, function (_a) {
         return [2 /*return*/];
     });
 }); });
@@ -226,6 +213,51 @@ app.post('/update_room', function (req, res) { return __awaiter(_this, void 0, v
             }
         });
         return [2 /*return*/];
+    });
+}); });
+app.post('/remove_player', function (req, res) {
+    var user_id = req.body.id;
+    var room_id = req.body.room_id;
+    DB_rooms.remove_player(room_id, user_id)
+        .then(function (data) {
+        if (data.length > 0) {
+            res.send(create_success_object(200, data));
+        }
+        else {
+            res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
+        }
+    })["catch"](function (err) { return console.log(err); });
+});
+app.post('/add_player', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var user_id, room_id, player_object, room_object, in_room;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                user_id = req.body.id;
+                room_id = req.body.room_id;
+                return [4 /*yield*/, DB_users.get_user_by_id(user_id)];
+            case 1:
+                player_object = _a.sent();
+                return [4 /*yield*/, DB_rooms.get_room(room_id)];
+            case 2:
+                room_object = _a.sent();
+                in_room = room_object[0].players.find(function (el) { return el.id === user_id; });
+                if (in_room === undefined) {
+                    DB_rooms.add_player(room_id, player_object)
+                        .then(function (data) {
+                        if (data.length > 0) {
+                            res.send(create_success_object(200, data));
+                        }
+                        else {
+                            res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
+                        }
+                    });
+                }
+                else {
+                    res.send(create_error_object(300, "A user with that ID is already in this room."));
+                }
+                return [2 /*return*/];
+        }
     });
 }); });
 app.get('/get_room/:id', function (req, res) { return __awaiter(_this, void 0, void 0, function () {

@@ -80,14 +80,6 @@ const create_success_object = (statusCode: Number = 200, content: any) => {
 	return success_object;
 }
 
-
-//ENDPOINTS FOR USER
-//POST ADD_USER
-//GET GET_USER:ID
-//GET LOGGED_IN:DATA
-//POST UPDATE_USER
-
-
 app.post('/add_user', (req: any, res: any) => {
 	if (req.body.username != undefined && req.body.username.length > 0) {
 		DB_users.init_user(req.body.id, req.body.username, uuid_v4())
@@ -141,11 +133,6 @@ app.post('/update_user', (req: any, res: any) => {
 	}
 });
 
-
-//ENDPOINTS FOR PLAYLISTS
-// GET GET_RECOMMENDED
-// POST SAVE_RECOMMENDED
-
 app.get('/get_recommended', (req: any, res: any) => {
 
 	DB_playlists.get_recommended()
@@ -182,10 +169,6 @@ app.post('/save_recommended', async (req: any, res: any) => {
 		})
 })
 
-app.post('/change_room', async (req:any, res:any) => {
-
-})
-
 app.post('/init_new_room', async (req:any, res:any) => {
 	const playlist_URI = req.body.URI;
 	const token = req.body.token;
@@ -220,8 +203,42 @@ app.post('/update_room', async (req:any, res:any) => {
 			res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
 		}
 	})
+})
+
+app.post('/remove_player', (req:any, res:any) => {
+	const user_id = req.body.id;
+	const room_id = req.body.room_id;
+	DB_rooms.remove_player(room_id, user_id)
+	.then(data => {
+		if(data.length > 0){
+			res.send(create_success_object(200, data));
+		} else {
+			res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
+		}
+	})
+	.catch(err => console.log(err))
+})
+app.post('/add_player', async (req:any, res:any) => {
+	const user_id = req.body.id;
+	const room_id = req.body.room_id;
+	const player_object = await DB_users.get_user_by_id(user_id);
+	const room_object = await DB_rooms.get_room(room_id);
+	const in_room = room_object[0].players.find(el => el.id === user_id);
+	if(in_room === undefined){
+		DB_rooms.add_player(room_id, player_object)
+		.then(data => {
+			if(data.length > 0){
+				res.send(create_success_object(200, data));
+			} else {
+				res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
+			}
+		})
+	} else {
+		res.send(create_error_object(300, "A user with that ID is already in this room."));
+	}
 
 })
+
 app.get('/get_room/:id', async (req:any, res:any) => {
 	const room_id = parseInt(req.params.id);
 	if(Number.isInteger(room_id)){

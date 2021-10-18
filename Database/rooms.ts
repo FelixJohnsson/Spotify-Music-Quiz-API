@@ -100,20 +100,19 @@ const add_player = (id:String, new_player_object:User) => {
         let update = { $push: {players: new_player_object}};
         room_model.findOneAndUpdate({ id: id }, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
             if(error) reject(error);
-            if(success) resolve(success);
+            if(success) resolve([success]);
         }); 
     })
 }
-const remove_player = async (room_id:String, display_name:String) => {
+const remove_player = async (room_id:String, id:String) => {
     return new Promise(async (resolve, reject) => {
     let room_object:any = await get_room(room_id);
     if(room_object.length === 0) {
         reject(400);
     };
-    if(!room_object[0].players.includes(display_name)) reject(401);
     let filter;
     let update;
-    const rest_of_players = room_object[0].players.filter(user => user.display_name != display_name);
+    const rest_of_players = room_object[0].players.filter(user => user.id != id);
         if(rest_of_players.length === 0){
             delete_room(room_id);
         } else {
@@ -123,7 +122,7 @@ const remove_player = async (room_id:String, display_name:String) => {
 
         room_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
             if(error) reject(error);
-            if(success) resolve(success);
+            if(success) resolve([success]);
         }); 
     })
 }

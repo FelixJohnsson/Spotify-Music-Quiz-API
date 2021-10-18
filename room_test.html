@@ -11,15 +11,18 @@
     <button onclick="increment_room()">Increment room</button>
     <button onclick="pause_room()">Pause room</button>
     <button onclick="unpause_room()">Unpause room</button>
+    <button onclick="add_player()">Add player</button>
+    <button onclick="remove_player()">Remove player</button>
     <div id="room_output">
 
     </div>
 </body>
 <script>
+    let token = 'BQAg1uJTDR75i734TI_GRumtRsWbWArwLCu-9--xZV2DhVVsXif2cUe987msJYnUfoDBVl6hPsB6A65sjjTRZ6O7iYJSMnA8QmJ-ejzJ2jd-eTmQD60CubfC8FwzicSEfHxtYYVCAE1Y301qs36JK1dzDlA4XM53HplM9zPZzlgzY7rtSjA8-7jA0OrOWRc3vHz1L8mTmagTSuZZim1uKI4rR6rclPZ8Yg8_qMsItnNW104XJLS2zeKjyH2EIpgjGYnlnO_z1EQnVBrKIXjL7Go';
     const init_new_room = () => {
         const body = {
             URI:'2Ob2rWWwZxbz6yWuTmBd6T',
-            token: 'BQAiV5cX9X-sSqqN_OO6YMymoIrwxKT4E0f2P_x-uWjjkVG7NqtJP1e_W2CZDkr9D5VXXuZEYkCyd7Mn2iQhQCJ5kjMmTVt068YSAL2M36LUfR9hRuaj98EdkDdyPAAujpED4jiWyTtoanVbxDG5uGqbfIjjaQIzTRiPzABw7oRNBaV6wleYr3SEd-S6x_rMOmebmJAh4UiaJApgLz9c5tteyabiGosKz11mRevrBCswmeEl96N8TxAZ5lt9Nf4isF2CZ-yHuTcS5EtG88oqkFU',
+            token: token,
             id:'felle21'
         }
         fetch('http://localhost:5000/init_new_room', {
@@ -55,7 +58,7 @@
     }
     const increment_room = () => {
         const body = {
-            token: 'BQB-frxRKerbavs7L9rSwJ5z83ex5Gfl9VPxjrXQHRdtPux7tEz2K3iKL1TJ2lVDaPk_6ne6HmlnCF_auufl2GPkvpD4hoUfl9hJmMm6VtQkYqiTERThD4iHxTkeNtfV6njjtKJERCP4CxDsHcjzGV1skFrLQYH-CoJkwzdBqV_bx50Y2CZqyuwbFG1HRR7RF6G-KbefsIuS74sp4Tyx0Fs3y0vmLQV5vyHw0NPm9xKu4YcnVdwYhSQ0TCxd41kFhLTDA4GdXPwvqaSRpboa53U',
+            token: token,
             id:'felle21',
             room_id: '1',
             type: 'Increment room',
@@ -75,7 +78,7 @@
     }
     const pause_room = () => {
         const body = {
-            token: 'BQB-frxRKerbavs7L9rSwJ5z83ex5Gfl9VPxjrXQHRdtPux7tEz2K3iKL1TJ2lVDaPk_6ne6HmlnCF_auufl2GPkvpD4hoUfl9hJmMm6VtQkYqiTERThD4iHxTkeNtfV6njjtKJERCP4CxDsHcjzGV1skFrLQYH-CoJkwzdBqV_bx50Y2CZqyuwbFG1HRR7RF6G-KbefsIuS74sp4Tyx0Fs3y0vmLQV5vyHw0NPm9xKu4YcnVdwYhSQ0TCxd41kFhLTDA4GdXPwvqaSRpboa53U',
+            token: token,
             id:'felle21',
             room_id: '1',
             type: 'Pause',
@@ -95,13 +98,55 @@
     }
     const unpause_room = () => {
         const body = {
-            token: 'BQB-frxRKerbavs7L9rSwJ5z83ex5Gfl9VPxjrXQHRdtPux7tEz2K3iKL1TJ2lVDaPk_6ne6HmlnCF_auufl2GPkvpD4hoUfl9hJmMm6VtQkYqiTERThD4iHxTkeNtfV6njjtKJERCP4CxDsHcjzGV1skFrLQYH-CoJkwzdBqV_bx50Y2CZqyuwbFG1HRR7RF6G-KbefsIuS74sp4Tyx0Fs3y0vmLQV5vyHw0NPm9xKu4YcnVdwYhSQ0TCxd41kFhLTDA4GdXPwvqaSRpboa53U',
+            token: token,
             id:'felle21',
             room_id: '1',
             type: 'Unpause',
             value: null
         }
         fetch('http://localhost:5000/update_room', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+            })
+    }
+
+    const add_player = () => {
+        const body = {
+            token: token,
+            id:'felle21',
+            room_id: '1',
+            type: 'Unpause',
+            value: null
+        }
+        fetch('http://localhost:5000/add_player', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+            })
+    }
+
+    const remove_player = () => {
+        const body = {
+            token: token,
+            id:'felle21',
+            room_id: '1',
+            type: 'Unpause',
+            value: null
+        }
+        fetch('http://localhost:5000/remove_player', {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json'

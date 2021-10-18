@@ -132,11 +132,11 @@ var add_player = function (id, new_player_object) {
             if (error)
                 reject(error);
             if (success)
-                resolve(success);
+                resolve([success]);
         });
     });
 };
-var remove_player = function (room_id, display_name) { return __awaiter(_this, void 0, void 0, function () {
+var remove_player = function (room_id, id) { return __awaiter(_this, void 0, void 0, function () {
     var _this = this;
     return __generator(this, function (_a) {
         return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
@@ -150,9 +150,7 @@ var remove_player = function (room_id, display_name) { return __awaiter(_this, v
                                 reject(400);
                             }
                             ;
-                            if (!room_object[0].players.includes(display_name))
-                                reject(401);
-                            rest_of_players = room_object[0].players.filter(function (user) { return user.display_name != display_name; });
+                            rest_of_players = room_object[0].players.filter(function (user) { return user.id != id; });
                             if (rest_of_players.length === 0) {
                                 delete_room(room_id);
                             }
@@ -164,7 +162,7 @@ var remove_player = function (room_id, display_name) { return __awaiter(_this, v
                                 if (error)
                                     reject(error);
                                 if (success)
-                                    resolve(success);
+                                    resolve([success]);
                             });
                             return [2 /*return*/];
                     }
