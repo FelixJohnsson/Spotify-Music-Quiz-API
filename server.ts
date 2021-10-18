@@ -198,7 +198,7 @@ app.post('/update_room', async (req:any, res:any) => {
 	DB_rooms.update_room(room_id, type, value)
 	.then(data => {
 		if(data.length > 0){
-			res.send(create_success_object(200, data));
+			res.send(create_success_object(200, data[0]));
 		} else {
 			res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
 		}
@@ -211,7 +211,7 @@ app.post('/remove_player', (req:any, res:any) => {
 	DB_rooms.remove_player(room_id, user_id)
 	.then(data => {
 		if(data.length > 0){
-			res.send(create_success_object(200, data));
+			res.send(create_success_object(200, data[0]));
 		} else {
 			res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
 		}
@@ -228,7 +228,7 @@ app.post('/add_player', async (req:any, res:any) => {
 		DB_rooms.add_player(room_id, player_object)
 		.then(data => {
 			if(data.length > 0){
-				res.send(create_success_object(200, data));
+				res.send(create_success_object(200, data[0]));
 			} else {
 				res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
 			}

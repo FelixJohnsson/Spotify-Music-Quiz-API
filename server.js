@@ -206,7 +206,7 @@ app.post('/update_room', function (req, res) { return __awaiter(_this, void 0, v
         DB_rooms.update_room(room_id, type, value)
             .then(function (data) {
             if (data.length > 0) {
-                res.send(create_success_object(200, data));
+                res.send(create_success_object(200, data[0]));
             }
             else {
                 res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
@@ -221,7 +221,7 @@ app.post('/remove_player', function (req, res) {
     DB_rooms.remove_player(room_id, user_id)
         .then(function (data) {
         if (data.length > 0) {
-            res.send(create_success_object(200, data));
+            res.send(create_success_object(200, data[0]));
         }
         else {
             res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
@@ -246,7 +246,7 @@ app.post('/add_player', function (req, res) { return __awaiter(_this, void 0, vo
                     DB_rooms.add_player(room_id, player_object)
                         .then(function (data) {
                         if (data.length > 0) {
-                            res.send(create_success_object(200, data));
+                            res.send(create_success_object(200, data[0]));
                         }
                         else {
                             res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
