@@ -128,6 +128,57 @@ const remove_player = async (room_id:String, display_name:String) => {
     })
 }
 
+const update_room = (id:String, type:String, value:String) => {
+    switch(type){
+        case 'Increment room':
+            return new Promise((resolve, reject) => {
+                get_room(id)
+                .then((room_object:any) => {
+                    let filter = { id: id };
+                    let update = { 
+                        $inc: {currently_playing_number: 1},
+                        $set: {
+                            currently_playing_offset:room_object[0].songs[room_object[0].currently_playing_number+1].track.track_number-1,
+                            currently_playing_track: room_object[0].songs[room_object[0].currently_playing_number+1].track.name,
+                            currently_playing_artist:room_object[0].songs[room_object[0].currently_playing_number+1].track.artists[0].name,
+                                                uri:room_object[0].songs[room_object[0].currently_playing_number+1].track.album.uri
+                        }
+                    };
+                    room_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
+                        if (error) reject(error);
+                        if (success) resolve([success]);
+                    }); 
+                })  
+            })
+        case 'Pause':
+            return new Promise((resolve, reject) => {
+                let filter = { id: id };
+                let update = { $set:
+                    { 
+                        paused: true,
+                        progress_ms: value
+                    }
+                };
+                room_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
+                    if (error) reject(error);
+                    if (success) resolve(success);
+                }); 
+            })
+        case 'Unpause':
+            return new Promise((resolve, reject) => {
+                let filter = { id: id };
+                let update = { $set:
+                    {paused: false}
+                };
+                room_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
+                    if (error) reject(error);
+                    if (success) resolve(success);
+                }); 
+            })
+    }
+}
+
+
 module.exports = {
     create_new_room,
     delete_room,
@@ -135,6 +186,6 @@ module.exports = {
       
     add_player,
     remove_player,
-    //update_room
-    
+
+    update_room
 }

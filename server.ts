@@ -210,6 +210,17 @@ app.post('/update_room', async (req:any, res:any) => {
 	const user_id = req.body.id;
 	const room_id = req.body.room_id;
 	const type = req.body.type;
+	const value = req.body.value;
+	
+	DB_rooms.update_room(room_id, type, value)
+	.then(data => {
+		console.log(data)
+		if(data.length > 0){
+			res.send(create_success_object(200, data));
+		} else {
+			res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
+		}
+	})
 
 })
 app.get('/get_room/:id', async (req:any, res:any) => {

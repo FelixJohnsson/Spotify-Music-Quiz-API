@@ -8,6 +8,7 @@
 </head>
 <body>
     <button onclick="init_new_room()">Init new room</button>
+    <button onclick="increment_room()">Increment room</button>
     <div id="room_output">
 
     </div>
@@ -16,7 +17,7 @@
     const init_new_room = () => {
         const body = {
             URI:'2Ob2rWWwZxbz6yWuTmBd6T',
-            token: 'BQDYx4EkV0eXJR2YRKLwQEJ1I3-C5FqB27rKwAVGGZJ3p9D5-pPn_57qQ-f90BDJGRbkIDZhuifP0bo6_2MUZT0XACxIFuVe4JgjQUP30LYcffvqNi0p8rD5jCj_GEYyXp5m47A2VV8p2ZmcB2II8trJI6Gjwe8g10TEra4D6sfWZalLlzHhyluhWK34WhoYkkkd8MGnfr-NP01QFo8Ulq5me_lrXOBtvgr5FEKIMRVmTks7LCVqjvozD-akHngrLcna-l2c1gd-1Pw44DAljTw',
+            token: 'BQAiV5cX9X-sSqqN_OO6YMymoIrwxKT4E0f2P_x-uWjjkVG7NqtJP1e_W2CZDkr9D5VXXuZEYkCyd7Mn2iQhQCJ5kjMmTVt068YSAL2M36LUfR9hRuaj98EdkDdyPAAujpED4jiWyTtoanVbxDG5uGqbfIjjaQIzTRiPzABw7oRNBaV6wleYr3SEd-S6x_rMOmebmJAh4UiaJApgLz9c5tteyabiGosKz11mRevrBCswmeEl96N8TxAZ5lt9Nf4isF2CZ-yHuTcS5EtG88oqkFU',
             id:'felle21'
         }
         fetch('http://localhost:5000/init_new_room', {
@@ -50,5 +51,26 @@
                 })
             })
     }
+    const increment_room = () => {
+        const body = {
+            token: 'BQB-frxRKerbavs7L9rSwJ5z83ex5Gfl9VPxjrXQHRdtPux7tEz2K3iKL1TJ2lVDaPk_6ne6HmlnCF_auufl2GPkvpD4hoUfl9hJmMm6VtQkYqiTERThD4iHxTkeNtfV6njjtKJERCP4CxDsHcjzGV1skFrLQYH-CoJkwzdBqV_bx50Y2CZqyuwbFG1HRR7RF6G-KbefsIuS74sp4Tyx0Fs3y0vmLQV5vyHw0NPm9xKu4YcnVdwYhSQ0TCxd41kFhLTDA4GdXPwvqaSRpboa53U',
+            id:'felle21',
+            room_id: '1',
+            type: 'Increment room',
+            value: null
+        }
+        fetch('http://localhost:5000/update_room', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+            })
+    }
+    
 </script>
 </html>

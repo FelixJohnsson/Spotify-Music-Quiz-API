@@ -209,12 +209,23 @@ app.post('/init_new_room', function (req, res) { return __awaiter(_this, void 0,
     });
 }); });
 app.post('/update_room', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var token, user_id, room_id, type;
+    var token, user_id, room_id, type, value;
     return __generator(this, function (_a) {
         token = req.body.token;
         user_id = req.body.id;
         room_id = req.body.room_id;
         type = req.body.type;
+        value = req.body.value;
+        DB_rooms.update_room(room_id, type, value)
+            .then(function (data) {
+            console.log(data);
+            if (data.length > 0) {
+                res.send(create_success_object(200, data));
+            }
+            else {
+                res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
+            }
+        });
         return [2 /*return*/];
     });
 }); });

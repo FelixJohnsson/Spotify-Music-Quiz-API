@@ -172,10 +172,64 @@ var remove_player = function (room_id, display_name) { return __awaiter(_this, v
             }); })];
     });
 }); };
+var update_room = function (id, type, value) {
+    switch (type) {
+        case 'Increment room':
+            return new Promise(function (resolve, reject) {
+                get_room(id)
+                    .then(function (room_object) {
+                    var filter = { id: id };
+                    var update = {
+                        $inc: { currently_playing_number: 1 },
+                        $set: {
+                            currently_playing_offset: room_object[0].songs[room_object[0].currently_playing_number + 1].track.track_number - 1,
+                            currently_playing_track: room_object[0].songs[room_object[0].currently_playing_number + 1].track.name,
+                            currently_playing_artist: room_object[0].songs[room_object[0].currently_playing_number + 1].track.artists[0].name,
+                            uri: room_object[0].songs[room_object[0].currently_playing_number + 1].track.album.uri
+                        }
+                    };
+                    room_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, function (error, success) {
+                        if (error)
+                            reject(error);
+                        if (success)
+                            resolve([success]);
+                    });
+                });
+            });
+        case 'Pause':
+            return new Promise(function (resolve, reject) {
+                var filter = { id: id };
+                var update = { $set: {
+                        paused: true,
+                        progress_ms: value
+                    }
+                };
+                room_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, function (error, success) {
+                    if (error)
+                        reject(error);
+                    if (success)
+                        resolve(success);
+                });
+            });
+        case 'Unpause':
+            return new Promise(function (resolve, reject) {
+                var filter = { id: id };
+                var update = { $set: { paused: false }
+                };
+                room_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, function (error, success) {
+                    if (error)
+                        reject(error);
+                    if (success)
+                        resolve(success);
+                });
+            });
+    }
+};
 module.exports = {
     create_new_room: create_new_room,
     delete_room: delete_room,
     get_room: get_room,
     add_player: add_player,
-    remove_player: remove_player
+    remove_player: remove_player,
+    update_room: update_room
 };
