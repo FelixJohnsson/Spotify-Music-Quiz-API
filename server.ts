@@ -214,7 +214,6 @@ app.post('/update_room', async (req:any, res:any) => {
 	
 	DB_rooms.update_room(room_id, type, value)
 	.then(data => {
-		console.log(data)
 		if(data.length > 0){
 			res.send(create_success_object(200, data));
 		} else {

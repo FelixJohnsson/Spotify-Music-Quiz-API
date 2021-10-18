@@ -208,7 +208,7 @@ var update_room = function (id, type, value) {
                     if (error)
                         reject(error);
                     if (success)
-                        resolve(success);
+                        resolve([success]);
                 });
             });
         case 'Unpause':
@@ -220,7 +220,7 @@ var update_room = function (id, type, value) {
                     if (error)
                         reject(error);
                     if (success)
-                        resolve(success);
+                        resolve([success]);
                 });
             });
     }

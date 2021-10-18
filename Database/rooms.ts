@@ -161,7 +161,7 @@ const update_room = (id:String, type:String, value:String) => {
                 };
                 room_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
                     if (error) reject(error);
-                    if (success) resolve(success);
+                    if (success) resolve([success]);
                 }); 
             })
         case 'Unpause':
@@ -172,7 +172,7 @@ const update_room = (id:String, type:String, value:String) => {
                 };
                 room_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
                     if (error) reject(error);
-                    if (success) resolve(success);
+                    if (success) resolve([success]);
                 }); 
             })
     }

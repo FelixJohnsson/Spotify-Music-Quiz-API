@@ -9,6 +9,8 @@
 <body>
     <button onclick="init_new_room()">Init new room</button>
     <button onclick="increment_room()">Increment room</button>
+    <button onclick="pause_room()">Pause room</button>
+    <button onclick="unpause_room()">Unpause room</button>
     <div id="room_output">
 
     </div>
@@ -71,6 +73,45 @@
                 console.log(data);
             })
     }
-    
+    const pause_room = () => {
+        const body = {
+            token: 'BQB-frxRKerbavs7L9rSwJ5z83ex5Gfl9VPxjrXQHRdtPux7tEz2K3iKL1TJ2lVDaPk_6ne6HmlnCF_auufl2GPkvpD4hoUfl9hJmMm6VtQkYqiTERThD4iHxTkeNtfV6njjtKJERCP4CxDsHcjzGV1skFrLQYH-CoJkwzdBqV_bx50Y2CZqyuwbFG1HRR7RF6G-KbefsIuS74sp4Tyx0Fs3y0vmLQV5vyHw0NPm9xKu4YcnVdwYhSQ0TCxd41kFhLTDA4GdXPwvqaSRpboa53U',
+            id:'felle21',
+            room_id: '1',
+            type: 'Pause',
+            value: 10000
+        }
+        fetch('http://localhost:5000/update_room', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+            })
+    }
+    const unpause_room = () => {
+        const body = {
+            token: 'BQB-frxRKerbavs7L9rSwJ5z83ex5Gfl9VPxjrXQHRdtPux7tEz2K3iKL1TJ2lVDaPk_6ne6HmlnCF_auufl2GPkvpD4hoUfl9hJmMm6VtQkYqiTERThD4iHxTkeNtfV6njjtKJERCP4CxDsHcjzGV1skFrLQYH-CoJkwzdBqV_bx50Y2CZqyuwbFG1HRR7RF6G-KbefsIuS74sp4Tyx0Fs3y0vmLQV5vyHw0NPm9xKu4YcnVdwYhSQ0TCxd41kFhLTDA4GdXPwvqaSRpboa53U',
+            id:'felle21',
+            room_id: '1',
+            type: 'Unpause',
+            value: null
+        }
+        fetch('http://localhost:5000/update_room', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+            })
+    }
 </script>
 </html>

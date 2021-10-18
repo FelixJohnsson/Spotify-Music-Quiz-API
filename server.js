@@ -218,7 +218,6 @@ app.post('/update_room', function (req, res) { return __awaiter(_this, void 0, v
         value = req.body.value;
         DB_rooms.update_room(room_id, type, value)
             .then(function (data) {
-            console.log(data);
             if (data.length > 0) {
                 res.send(create_success_object(200, data));
             }
