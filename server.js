@@ -72,6 +72,8 @@ app.use(express.static("public"))
 var server = app.listen(process.env.PORT, function () {
     debug.print_success_status('Connected to: ' + process.env.PORT);
 });
+exports.name = server;
+var sockets = require('./sockets.js');
 var create_error_object = function (statusCode, error_message, content) {
     if (statusCode === void 0) { statusCode = 400; }
     var error_object = {
@@ -89,6 +91,17 @@ var create_success_object = function (statusCode, content) {
     };
     return success_object;
 };
+var options = { /* ... */};
+var io = require('socket.io')(server, options);
+io.on('connection', function (socket) { return __awaiter(_this, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        debug.print_connection_established('CONNECTION');
+        return [2 /*return*/];
+    });
+}); });
+app.get('/socket', function (req, res) {
+    res.sendFile(__dirname + '/socket_test.html');
+});
 app.post('/add_user', function (req, res) {
     if (req.body.username != undefined && req.body.username.length > 0) {
         DB_users.init_user(req.body.id, req.body.username, uuid_v4())
@@ -385,8 +398,8 @@ app.get('/callback', function (req, res) {
 app.get('/refresh_token/:token', (req:any, res:any) => {
 
     // requesting access token from refresh token
-    var refresh_token = req.params.token;
-    var authOptions = {
+    const refresh_token = req.params.token;
+    const authOptions = {
         url: 'https://accounts.spotify.com/api/token',
         headers: {
             //@ts-ignore
@@ -401,7 +414,7 @@ app.get('/refresh_token/:token', (req:any, res:any) => {
 
     request.post(authOptions, function (error:String, response:any, body:any) {
             if (!error && response.statusCode === 200) {
-                var access_token = body.access_token;
+                const access_token = body.access_token;
                 res.send({
                     'access_token': access_token
                 });

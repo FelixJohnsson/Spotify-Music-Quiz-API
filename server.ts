@@ -1,4 +1,5 @@
 const debug = require('./debugging.js');
+
 const DB_users = require('./Database/users.js');
 const DB_playlists = require('./Database/playlists.js');
 const DB_rooms = require('./Database/rooms.js');
@@ -42,8 +43,10 @@ app.use(express.static("public"))
 
 const server = app.listen(process.env.PORT, () => {
 	debug.print_success_status('Connected to: ' + process.env.PORT);
+	
 });
-
+exports.name = server;
+const sockets = require('./sockets.js');
 interface New_user {
 	username: string,
 		id: string,
@@ -79,6 +82,15 @@ const create_success_object = (statusCode: Number = 200, content: any) => {
 	}
 	return success_object;
 }
+const options = { /* ... */};
+const io = require('socket.io')(server, options);
+
+io.on('connection', async (socket:any) => {
+    debug.print_connection_established('CONNECTION')
+})
+app.get('/socket', (req:any, res:any) => {
+	res.sendFile(__dirname + '/socket_test.html');
+})
 
 app.post('/add_user', (req: any, res: any) => {
 	if (req.body.username != undefined && req.body.username.length > 0) {
@@ -236,7 +248,6 @@ app.post('/add_player', async (req:any, res:any) => {
 	} else {
 		res.send(create_error_object(300, "A user with that ID is already in this room."));
 	}
-
 })
 
 app.get('/get_room/:id', async (req:any, res:any) => {
@@ -314,9 +325,9 @@ app.get('/callback', (req: any, res: any): void => {
 	// your application requests refresh and access tokens
 	// after checking the state parameter
 
-	var code = req.query.code || null;
-	var state = req.query.state || null;
-	var storedState = req.cookies ? req.cookies[stateKey] : null;
+	const code = req.query.code || null;
+	const state = req.query.state || null;
+	const storedState = req.cookies ? req.cookies[stateKey] : null;
 
 	if (state === null || state !== storedState) {
 		res.redirect('/#' +
@@ -325,7 +336,7 @@ app.get('/callback', (req: any, res: any): void => {
 			}));
 	} else {
 		res.clearCookie(stateKey);
-		var authOptions = {
+		const authOptions = {
 			url: 'https://accounts.spotify.com/api/token',
 			form: {
 				code: code,
@@ -379,8 +390,8 @@ app.get('/callback', (req: any, res: any): void => {
 app.get('/refresh_token/:token', (req:any, res:any) => {
 
 	// requesting access token from refresh token
-	var refresh_token = req.params.token;
-	var authOptions = {
+	const refresh_token = req.params.token;
+	const authOptions = {
 		url: 'https://accounts.spotify.com/api/token',
 		headers: {
 			//@ts-ignore
@@ -395,7 +406,7 @@ app.get('/refresh_token/:token', (req:any, res:any) => {
 
 	request.post(authOptions, function (error:String, response:any, body:any) {
 			if (!error && response.statusCode === 200) {
-				var access_token = body.access_token;
+				const access_token = body.access_token;
 				res.send({
 					'access_token': access_token
 				});
