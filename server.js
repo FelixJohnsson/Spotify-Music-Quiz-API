@@ -94,12 +94,18 @@ var create_success_object = function (statusCode, content) {
 var options = { /* ... */};
 var io = require('socket.io')(server, options);
 io.on('connection', function (socket) { return __awaiter(_this, void 0, void 0, function () {
+    var room;
     return __generator(this, function (_a) {
         debug.print_connection_established('CONNECTION');
+        room = socket.handshake.headers.referer.split('/')[4];
+        console.log('Room: ' + room);
+        socket.on('ID', function (ID) {
+            console.log("Connected with ID: " + ID);
+        });
         return [2 /*return*/];
     });
 }); });
-app.get('/socket', function (req, res) {
+app.get('/room/:id', function (req, res) {
     res.sendFile(__dirname + '/socket_test.html');
 });
 app.post('/add_user', function (req, res) {

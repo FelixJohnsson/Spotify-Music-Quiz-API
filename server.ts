@@ -86,9 +86,16 @@ const options = { /* ... */};
 const io = require('socket.io')(server, options);
 
 io.on('connection', async (socket:any) => {
-    debug.print_connection_established('CONNECTION')
+    debug.print_connection_established('CONNECTION');
+	const room:string = socket.handshake.headers.referer.split('/')[4];
+	console.log('Room: ' + room);
+    socket.on('ID',(ID) => {
+        console.log(`Connected with ID: ${ID}`)
+    });
 })
-app.get('/socket', (req:any, res:any) => {
+
+
+app.get('/room/:id', (req:any, res:any) => {
 	res.sendFile(__dirname + '/socket_test.html');
 })
 
