@@ -1,6 +1,15 @@
 # Spotify-Music-Quiz
 A Kahoot-esque API using Node.js, JS/TS Express, Mongo, Socket.io and the Spotify API.
 
+##### To start: 
+```
+npm i
+npm run dev (for the TypeScript)
+npm start
+```
+
+Also needs a .env with MONGO URL and PORT.
+
 # ENDPOINTS
   ## For rooms
     POST /init_new_room
