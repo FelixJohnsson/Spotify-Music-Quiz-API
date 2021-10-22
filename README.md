@@ -1,5 +1,5 @@
 # Spotify-Music-Quiz
-A Fullstack application with Node.js, TS, Express, Mongo, socket.io and the Spotify API.
+A Kahoot-esque API using Node.js, JS/TS Express, Mongo, Socket.io and the Spotify API.
 
 # ENDPOINTS
   ## For rooms
