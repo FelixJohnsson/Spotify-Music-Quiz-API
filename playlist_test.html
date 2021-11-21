@@ -22,15 +22,17 @@
 
     const save_recommended = () => {
         const link = document.getElementById('playlist_input').value;
+        document.getElementById('playlist_input').value = '';
         const token = document.getElementById('token_input').value;
         const URI = link.split('/')[4].split('?')[0];
+        
         let data = {
             URI: URI,
             token: token
         }
         //https://open.spotify.com/playlist/2Ob2rWWwZxbz6yWuTmBd6T?si=163a08ddbe6e4ac7
 
-        fetch('http://localhost:5001/save_recommended', {
+        fetch('http://localhost:5000/save_recommended', {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json'

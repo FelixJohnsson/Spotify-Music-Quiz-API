@@ -72,8 +72,6 @@ app.use(express.static("public"))
 var server = app.listen(process.env.PORT, function () {
     debug.print_success_status('Connected to: ' + process.env.PORT);
 });
-exports.name = server;
-var sockets = require('./sockets.js');
 var create_error_object = function (statusCode, error_message, content) {
     if (statusCode === void 0) { statusCode = 400; }
     var error_object = {
@@ -91,14 +89,20 @@ var create_success_object = function (statusCode, content) {
     };
     return success_object;
 };
-var options = { /* ... */};
+var options = {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"],
+        allowedHeaders: ["room_id"],
+        credentials: true
+    }
+};
 var io = require('socket.io')(server, options);
 io.on('connection', function (socket) { return __awaiter(_this, void 0, void 0, function () {
     var room;
     return __generator(this, function (_a) {
-        debug.print_connection_established('CONNECTION');
-        room = socket.handshake.headers.referer.split('/')[4];
-        console.log('Room: ' + room);
+        room = socket.handshake.headers['room_id'];
+        debug.print_connection_established('CONNECTION in ROOM ' + room);
         socket.on('ID', function (ID) {
             console.log("Connected with ID: " + ID);
         });
@@ -124,8 +128,13 @@ app.post('/add_user', function (req, res) {
 app.get('/get_user/:id', function (req, res) {
     DB_users.get_user_by_id(req.params.id)
         .then(function (data) {
-        res.send(create_success_object(200, data[0]));
-        debug.print_general_status("Found user " + req.params.id);
+        if (data.length === 0) {
+            res.send(create_error_object(400, "Couldn't find that user."));
+        }
+        else {
+            res.send(create_success_object(200, data[0]));
+            debug.print_general_status("Found user " + req.params.id);
+        }
     });
 });
 app.get('/logged_in/:data', function (req, res) {
@@ -167,9 +176,10 @@ app.get('/get_recommended', function (req, res) {
     });
 });
 app.post('/save_recommended', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var URI;
+    var URI, token;
     return __generator(this, function (_a) {
         URI = req.body.URI;
+        token = req.body.token;
         DB_playlists.search_recommended(URI)
             .then(function (data) {
             if (data.length > 0) {
@@ -179,7 +189,7 @@ app.post('/save_recommended', function (req, res) { return __awaiter(_this, void
                 axios("https://api.spotify.com/v1/playlists/" + URI, {
                     headers: {
                         Accept: "application/json",
-                        Authorization: "Bearer " + req.body.token,
+                        Authorization: "Bearer " + token,
                         "Content-Type": "application/json"
                     }
                 })
@@ -380,7 +390,7 @@ app.get('/callback', function (req, res) {
                     }
                 })
                     .then(function (response) {
-                    res.redirect('/logged_in/' +
+                    res.redirect('http://localhost:3000/logged_in/' +
                         querystring.stringify({
                             access_token: access_token_1,
                             refresh_token: refresh_token_1,

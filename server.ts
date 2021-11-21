@@ -45,8 +45,7 @@ const server = app.listen(process.env.PORT, () => {
 	debug.print_success_status('Connected to: ' + process.env.PORT);
 	
 });
-exports.name = server;
-const sockets = require('./sockets.js');
+
 interface New_user {
 	username: string,
 		id: string,
@@ -82,13 +81,18 @@ const create_success_object = (statusCode: Number = 200, content: any) => {
 	}
 	return success_object;
 }
-const options = { /* ... */};
+const options = {  
+	cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["room_id"],
+    credentials: true
+  }};
 const io = require('socket.io')(server, options);
 
 io.on('connection', async (socket:any) => {
-    debug.print_connection_established('CONNECTION');
-	const room:string = socket.handshake.headers.referer.split('/')[4];
-	console.log('Room: ' + room);
+	const room:string = socket.handshake.headers['room_id'];
+    debug.print_connection_established('CONNECTION in ROOM ' + room);
     socket.on('ID',(ID) => {
         console.log(`Connected with ID: ${ID}`)
     });
@@ -115,8 +119,12 @@ app.post('/add_user', (req: any, res: any) => {
 app.get('/get_user/:id', (req: any, res: any) => {
 	DB_users.get_user_by_id(req.params.id)
 		.then(data => {
-			res.send(create_success_object(200, data[0]))
-			debug.print_general_status(`Found user ${req.params.id}`);
+			if(data.length === 0){
+				res.send(create_error_object(400, "Couldn't find that user."));
+			} else {
+				res.send(create_success_object(200, data[0]))
+				debug.print_general_status(`Found user ${req.params.id}`);
+			}
 		})
 });
 
@@ -165,6 +173,7 @@ app.get('/get_recommended', (req: any, res: any) => {
 
 app.post('/save_recommended', async (req: any, res: any) => {
 	const URI = req.body.URI;
+	const token = req.body.token;
 	DB_playlists.search_recommended(URI)
 		.then(data => {
 			if (data.length > 0) {
@@ -173,7 +182,7 @@ app.post('/save_recommended', async (req: any, res: any) => {
 				axios(`https://api.spotify.com/v1/playlists/${URI}`, {
 						headers: {
 							Accept: "application/json",
-							Authorization: "Bearer " + req.body.token,
+							Authorization: "Bearer " + token,
 							"Content-Type": "application/json"
 						}
 					})
@@ -373,7 +382,7 @@ app.get('/callback', (req: any, res: any): void => {
 						}
 					})
 					.then((response) => {
-						res.redirect('/logged_in/' +
+						res.redirect('http://localhost:3000/logged_in/' +
 							querystring.stringify({
 								access_token: access_token,
 								refresh_token: refresh_token,

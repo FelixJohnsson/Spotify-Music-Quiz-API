@@ -10,6 +10,7 @@
     "express": "^4.17.1",
     "http": "^0.0.1-security",
     "mongoose": "^6.0.8",
+    "node": "^17.1.0",
     "node-fetch": "^3.0.0",
     "nodemon": "^2.0.13",
     "querystring": "^0.2.1",
