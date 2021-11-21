@@ -92,10 +92,21 @@ const io = require('socket.io')(server, options);
 
 io.on('connection', async (socket:any) => {
 	const room:string = socket.handshake.headers['room_id'];
+	socket.join(room);
     debug.print_connection_established('CONNECTION in ROOM ' + room);
-    socket.on('ID',(ID) => {
-        console.log(`Connected with ID: ${ID}`)
-    });
+
+	socket.on('Display name', display_name => {
+		console.log(`Connected with name: ${display_name}`)
+	})
+	socket.on('msg', object => {
+		const newObject = {
+			display_name: object.display_name, 
+			msg: object.msg,
+			uuid:uuid_v4()
+		}
+		console.log('send message')
+		io.to(room).emit('msg', newObject);
+	})
 })
 
 

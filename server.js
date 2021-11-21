@@ -102,9 +102,19 @@ io.on('connection', function (socket) { return __awaiter(_this, void 0, void 0, 
     var room;
     return __generator(this, function (_a) {
         room = socket.handshake.headers['room_id'];
+        socket.join(room);
         debug.print_connection_established('CONNECTION in ROOM ' + room);
-        socket.on('ID', function (ID) {
-            console.log("Connected with ID: " + ID);
+        socket.on('Display name', function (display_name) {
+            console.log("Connected with name: " + display_name);
+        });
+        socket.on('msg', function (object) {
+            var newObject = {
+                display_name: object.display_name,
+                msg: object.msg,
+                uuid: uuid_v4()
+            };
+            console.log('send message');
+            io.to(room).emit('msg', newObject);
         });
         return [2 /*return*/];
     });
