@@ -222,7 +222,9 @@ app.post('/init_new_room', async (req:any, res:any) => {
 	})
 	.then(data => {
 		DB_rooms.create_new_room(data.data, user_id)
-		.then(data => res.send(create_success_object(200, data)))
+		.then(data => {
+			res.send(create_success_object(200, data))
+		})
 	})
 	.catch(err => res.send(create_error_object(400, "Can't find that playlist or your token has expired.", err)))
 })
@@ -233,7 +235,6 @@ app.post('/update_room', async (req:any, res:any) => {
 	const room_id = req.body.room_id;
 	const type = req.body.type;
 	const value = req.body.value;
-	
 	DB_rooms.update_room(room_id, type, value)
 	.then(data => {
 		if(data.length > 0){

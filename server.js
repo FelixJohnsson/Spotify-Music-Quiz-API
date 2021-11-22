@@ -229,7 +229,9 @@ app.post('/init_new_room', function (req, res) { return __awaiter(_this, void 0,
         })
             .then(function (data) {
             DB_rooms.create_new_room(data.data, user_id)
-                .then(function (data) { return res.send(create_success_object(200, data)); });
+                .then(function (data) {
+                res.send(create_success_object(200, data));
+            });
         })["catch"](function (err) { return res.send(create_error_object(400, "Can't find that playlist or your token has expired.", err)); });
         return [2 /*return*/];
     });
