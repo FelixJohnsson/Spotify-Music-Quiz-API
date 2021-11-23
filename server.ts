@@ -445,10 +445,3 @@ app.get('/refresh_token/:token', (req:any, res:any) => {
 
 });
 */
-const calc = (a, b) => {
-	return a * b;
-}
-
-module.exports = {
-	calc
-}
