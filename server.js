@@ -453,9 +453,3 @@ app.get('/refresh_token/:token', (req:any, res:any) => {
 
 });
 */
-var calc = function (a, b) {
-    return a * b;
-};
-module.exports = {
-    calc: calc
-};

@@ -212,7 +212,7 @@ app.post('/init_new_room', async (req:any, res:any) => {
 	const playlist_URI = req.body.URI;
 	const token = req.body.token;
 	const user_id = req.body.id;
-
+	
 	axios(`https://api.spotify.com/v1/playlists/${playlist_URI}`,{
 		headers: {
 			Accept: "application/json",
