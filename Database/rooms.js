@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34,7 +35,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
 //@ts-ignore
 var mongoose = require('mongoose');
 var room_schema = new mongoose.Schema({
@@ -55,10 +55,10 @@ var room_schema = new mongoose.Schema({
     currently_playing_artist: String,
     currently_playing_number: Number,
     progress_ms: Number,
-    first_connection: Date
+    first_connection: Date,
 });
 var room_model = mongoose.model('rooms', room_schema);
-var create_new_room = function (playlist_object, display_name) { return __awaiter(_this, void 0, void 0, function () {
+var create_new_room = function (playlist_object, display_name) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         return [2 /*return*/, new Promise(function (resolve, reject) {
                 var _a;
@@ -80,7 +80,7 @@ var create_new_room = function (playlist_object, display_name) { return __awaite
                     currently_playing_artist: null,
                     currently_playing_number: 0,
                     progress_ms: 0,
-                    first_connection: Date.now()
+                    first_connection: Date.now(),
                 });
                 for (var i = new_room.songs.length - 1; i > 0; i--) {
                     var j = Math.floor(Math.random() * (i + 1));
@@ -101,7 +101,7 @@ var create_new_room = function (playlist_object, display_name) { return __awaite
             })];
     });
 }); };
-var get_room = function (id) { return __awaiter(_this, void 0, void 0, function () {
+var get_room = function (id) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         return [2 /*return*/, new Promise(function (resolve, reject) {
                 room_model.find({ id: id }, function (error, success) {
@@ -113,7 +113,7 @@ var get_room = function (id) { return __awaiter(_this, void 0, void 0, function 
             })];
     });
 }); };
-var delete_room = function (id) { return __awaiter(_this, void 0, void 0, function () {
+var delete_room = function (id) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         return [2 /*return*/, new Promise(function (resolve, reject) {
                 room_model.deleteOne({ id: id }, function (error, success) {
@@ -136,10 +136,9 @@ var add_player = function (id, new_player_object) {
         });
     });
 };
-var remove_player = function (room_id, id) { return __awaiter(_this, void 0, void 0, function () {
-    var _this = this;
+var remove_player = function (room_id, id) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+        return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(void 0, void 0, void 0, function () {
                 var room_object, filter, update, rest_of_players;
                 return __generator(this, function (_a) {
                     switch (_a.label) {

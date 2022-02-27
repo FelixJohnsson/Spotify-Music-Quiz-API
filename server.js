@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34,8 +35,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
-var debug = require('./debugging.js');
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var debugging_1 = __importDefault(require("./debugging"));
 var DB_users = require('./Database/users.js');
 var DB_playlists = require('./Database/playlists.js');
 var DB_rooms = require('./Database/rooms.js');
@@ -55,8 +59,9 @@ mongoose.connect(process.env.MONGO, {
     useUnifiedTopology: true
 })
     .then(function (res) {
-    debug.print_success_status('Connected to MongoDB.');
-})["catch"](function (err) { return debug.print_error_status('Failed to connect to MongoDB.'); });
+    debugging_1.default.print_success_status('Connected to MongoDB.');
+})
+    .catch(function (err) { return debugging_1.default.print_error_status('Failed to connect to MongoDB.'); });
 //SERVER -  Express
 var express = require('express');
 var router = express.Router();
@@ -70,7 +75,7 @@ app.use(express.static("public"))
 }))
     .use(bodyParser.json());
 var server = app.listen(process.env.PORT, function () {
-    debug.print_success_status('Connected to: ' + process.env.PORT);
+    debugging_1.default.print_success_status('Connected to: ' + process.env.PORT);
 });
 var create_error_object = function (statusCode, error_message, content) {
     if (statusCode === void 0) { statusCode = 400; }
@@ -98,12 +103,12 @@ var options = {
     }
 };
 var io = require('socket.io')(server, options);
-io.on('connection', function (socket) { return __awaiter(_this, void 0, void 0, function () {
+io.on('connection', function (socket) { return __awaiter(void 0, void 0, void 0, function () {
     var room;
     return __generator(this, function (_a) {
         room = socket.handshake.headers['room_id'];
         socket.join(room);
-        debug.print_connection_established('CONNECTION in ROOM ' + room);
+        debugging_1.default.print_connection_established('CONNECTION in ROOM ' + room);
         socket.on('Display name', function (display_name) {
             console.log("Connected with name: " + display_name);
         });
@@ -127,12 +132,12 @@ app.post('/add_user', function (req, res) {
         DB_users.init_user(req.body.id, req.body.username, uuid_v4())
             .then(function (data) {
             res.send(create_success_object(200, data));
-            debug.print_success_status("Added user " + data.username);
+            debugging_1.default.print_success_status("Added user " + data.username);
         });
     }
     else {
         res.send(create_error_object(400, "Couldn't add user, insufficient data received."));
-        debug.print_error_status("Failed to add user.");
+        debugging_1.default.print_error_status("Failed to add user.");
     }
 });
 app.get('/get_user/:id', function (req, res) {
@@ -143,7 +148,7 @@ app.get('/get_user/:id', function (req, res) {
         }
         else {
             res.send(create_success_object(200, data[0]));
-            debug.print_general_status("Found user " + req.params.id);
+            debugging_1.default.print_general_status("Found user " + req.params.id);
         }
     });
 });
@@ -158,7 +163,7 @@ app.get('/logged_in/:data', function (req, res) {
     };
     DB_users.update_user(user_info.id, 'login', user_info.oAuth);
     res.send(create_success_object(200, data));
-    debug.print_general_status("Logged in user " + 'ADMIN');
+    debugging_1.default.print_general_status("Logged in user " + 'ADMIN');
 });
 app.post('/update_user', function (req, res) {
     var array_of_types = ['delete', 'login', 'join_room', 'correct_guess', 'incorrect_guess', 'rooms_won', 'rooms_lost', 'new_badge', 'socket_change'];
@@ -169,7 +174,8 @@ app.post('/update_user', function (req, res) {
         DB_users.update_user(req.body.id, req.body.type, req.body.value)
             .then(function (data) {
             res.send(create_success_object(200, data));
-        })["catch"](function (err) {
+        })
+            .catch(function (err) {
             res.send(create_error_object(400, 'Error', err));
         });
     }
@@ -181,11 +187,12 @@ app.get('/get_recommended', function (req, res) {
     DB_playlists.get_recommended()
         .then(function (data) {
         res.send(create_success_object(200, data));
-    })["catch"](function (err) {
+    })
+        .catch(function (err) {
         res.send(create_error_object(400, "Can't find recommended playlists.", err));
     });
 });
-app.post('/save_recommended', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+app.post('/save_recommended', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var URI, token;
     return __generator(this, function (_a) {
         URI = req.body.URI;
@@ -206,7 +213,8 @@ app.post('/save_recommended', function (req, res) { return __awaiter(_this, void
                     .then(function (playlist_object) {
                     DB_playlists.add_recommended(playlist_object.data)
                         .then(function (data) { return res.send(create_success_object(200, data)); });
-                })["catch"](function (err) {
+                })
+                    .catch(function (err) {
                     res.send(create_error_object(400, "Can't add recommended playlists.", err));
                 });
             }
@@ -214,7 +222,7 @@ app.post('/save_recommended', function (req, res) { return __awaiter(_this, void
         return [2 /*return*/];
     });
 }); });
-app.post('/init_new_room', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+app.post('/init_new_room', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var playlist_URI, token, user_id;
     return __generator(this, function (_a) {
         playlist_URI = req.body.URI;
@@ -232,11 +240,12 @@ app.post('/init_new_room', function (req, res) { return __awaiter(_this, void 0,
                 .then(function (data) {
                 res.send(create_success_object(200, data));
             });
-        })["catch"](function (err) { return res.send(create_error_object(400, "Can't find that playlist or your token has expired.", err)); });
+        })
+            .catch(function (err) { return res.send(create_error_object(400, "Can't find that playlist or your token has expired.", err)); });
         return [2 /*return*/];
     });
 }); });
-app.post('/update_room', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+app.post('/update_room', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var token, user_id, room_id, type, value;
     return __generator(this, function (_a) {
         token = req.body.token;
@@ -267,9 +276,10 @@ app.post('/remove_player', function (req, res) {
         else {
             res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
         }
-    })["catch"](function (err) { return console.log(err); });
+    })
+        .catch(function (err) { return console.log(err); });
 });
-app.post('/add_player', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+app.post('/add_player', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var user_id, room_id, player_object, room_object, in_room;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -301,7 +311,7 @@ app.post('/add_player', function (req, res) { return __awaiter(_this, void 0, vo
         }
     });
 }); });
-app.get('/get_room/:id', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+app.get('/get_room/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var room_id;
     return __generator(this, function (_a) {
         room_id = parseInt(req.params.id);
@@ -322,7 +332,7 @@ app.get('/get_room/:id', function (req, res) { return __awaiter(_this, void 0, v
         return [2 /*return*/];
     });
 }); });
-app.get('/delete_room/:id', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+app.get('/delete_room/:id', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var room_id;
     return __generator(this, function (_a) {
         room_id = parseInt(req.params.id);
@@ -409,15 +419,16 @@ app.get('/callback', function (req, res) {
                             id: response.data.id,
                             username: response.data.display_name
                         }));
-                    debug.print_success_login('User successfully logged in');
-                })["catch"](function () { return debug.print_error_login('User unsuccessfully logged in'); });
+                    debugging_1.default.print_success_login('User successfully logged in');
+                })
+                    .catch(function () { return debugging_1.default.print_error_login('User unsuccessfully logged in'); });
             }
             else {
                 res.redirect('/#' +
                     querystring.stringify({
                         error: 'invalid_token'
                     }));
-                debug.print_error_login('User unsuccessfully logged in');
+                debugging_1.default.print_error_login('User unsuccessfully logged in');
             }
         });
     }

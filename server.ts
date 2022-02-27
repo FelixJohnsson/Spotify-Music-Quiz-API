@@ -1,4 +1,4 @@
-const debug = require('./debugging.js');
+import debug from './debugging'
 
 const DB_users = require('./Database/users.js');
 const DB_playlists = require('./Database/playlists.js');
@@ -95,10 +95,10 @@ io.on('connection', async (socket:any) => {
 	socket.join(room);
     debug.print_connection_established('CONNECTION in ROOM ' + room);
 
-	socket.on('Display name', display_name => {
+	socket.on('Display name', (display_name: any) => {
 		console.log(`Connected with name: ${display_name}`)
 	})
-	socket.on('msg', object => {
+	socket.on('msg', (object: { display_name: any; msg: any; }) => {
 		const newObject = {
 			display_name: object.display_name, 
 			msg: object.msg,
@@ -117,7 +117,7 @@ app.get('/room/:id', (req:any, res:any) => {
 app.post('/add_user', (req: any, res: any) => {
 	if (req.body.username != undefined && req.body.username.length > 0) {
 		DB_users.init_user(req.body.id, req.body.username, uuid_v4())
-			.then(data => {
+			.then((data: { username: any; }) => {
 				res.send(create_success_object(200, data))
 				debug.print_success_status(`Added user ${data.username}`);
 			})
@@ -129,7 +129,7 @@ app.post('/add_user', (req: any, res: any) => {
 
 app.get('/get_user/:id', (req: any, res: any) => {
 	DB_users.get_user_by_id(req.params.id)
-		.then(data => {
+		.then((data: string | any[]) => {
 			if(data.length === 0){
 				res.send(create_error_object(400, "Couldn't find that user."));
 			} else {
@@ -160,10 +160,10 @@ app.post('/update_user', (req: any, res: any) => {
 	}
 	if (array_of_types.includes(req.body.type) && req.body.id.length > 0) {
 		DB_users.update_user(req.body.id, req.body.type, req.body.value)
-			.then(data => {
+			.then((data: any) => {
 				res.send(create_success_object(200, data))
 			})
-			.catch(err => {
+			.catch((err: any) => {
 				res.send(create_error_object(400, 'Error', err))
 			})
 	} else {
@@ -186,7 +186,7 @@ app.post('/save_recommended', async (req: any, res: any) => {
 	const URI = req.body.URI;
 	const token = req.body.token;
 	DB_playlists.search_recommended(URI)
-		.then(data => {
+		.then((data: string | any[]) => {
 			if (data.length > 0) {
 				res.send(create_error_object(400, "That playlist already exists in recommended."))
 			} else {
@@ -199,7 +199,7 @@ app.post('/save_recommended', async (req: any, res: any) => {
 					})
 					.then((playlist_object: any) => {
 						DB_playlists.add_recommended(playlist_object.data)
-						.then(data => res.send(create_success_object(200, data))); 
+						.then((data: any) => res.send(create_success_object(200, data))); 
 					})
 					.catch((err: any) => {
 						res.send(create_error_object(400, "Can't add recommended playlists.", err))
@@ -220,13 +220,13 @@ app.post('/init_new_room', async (req:any, res:any) => {
 			"Content-Type": "application/json"
 		  }
 	})
-	.then(data => {
+	.then((data: { data: any; }) => {
 		DB_rooms.create_new_room(data.data, user_id)
-		.then(data => {
+		.then((data: any) => {
 			res.send(create_success_object(200, data))
 		})
 	})
-	.catch(err => res.send(create_error_object(400, "Can't find that playlist or your token has expired.", err)))
+	.catch((err: any) => res.send(create_error_object(400, "Can't find that playlist or your token has expired.", err)))
 })
 
 app.post('/update_room', async (req:any, res:any) => {
@@ -236,7 +236,7 @@ app.post('/update_room', async (req:any, res:any) => {
 	const type = req.body.type;
 	const value = req.body.value;
 	DB_rooms.update_room(room_id, type, value)
-	.then(data => {
+	.then((data: string | any[]) => {
 		if(data.length > 0){
 			res.send(create_success_object(200, data[0]));
 		} else {
@@ -249,24 +249,24 @@ app.post('/remove_player', (req:any, res:any) => {
 	const user_id = req.body.id;
 	const room_id = req.body.room_id;
 	DB_rooms.remove_player(room_id, user_id)
-	.then(data => {
+	.then((data: string | any[]) => {
 		if(data.length > 0){
 			res.send(create_success_object(200, data[0]));
 		} else {
 			res.send(create_error_object(400, "That room doesn't exist, maybe closed?"));
 		}
 	})
-	.catch(err => console.log(err))
+	.catch((err: any) => console.log(err))
 })
 app.post('/add_player', async (req:any, res:any) => {
 	const user_id = req.body.id;
 	const room_id = req.body.room_id;
 	const player_object = await DB_users.get_user_by_id(user_id);
 	const room_object = await DB_rooms.get_room(room_id);
-	const in_room = room_object[0].players.find(el => el.id === user_id);
+	const in_room = room_object[0].players.find((el: { id: any; }) => el.id === user_id);
 	if(in_room === undefined){
 		DB_rooms.add_player(room_id, player_object)
-		.then(data => {
+		.then((data: string | any[]) => {
 			if(data.length > 0){
 				res.send(create_success_object(200, data[0]));
 			} else {
@@ -282,7 +282,7 @@ app.get('/get_room/:id', async (req:any, res:any) => {
 	const room_id = parseInt(req.params.id);
 	if(Number.isInteger(room_id)){
 		DB_rooms.get_room(req.params.id)
-		.then(data => {
+		.then((data: string | any[]) => {
 			if(data.length > 0){
 				res.send(create_success_object(200, data));
 			} else {
@@ -297,7 +297,7 @@ app.get('/delete_room/:id', async (req:any, res:any) => {
 	const room_id = parseInt(req.params.id);
 	if(Number.isInteger(room_id)){
 		DB_rooms.delete_room(req.params.id)
-		.then(data => {
+		.then((data: { deletedCount: number; }) => {
 			if(data.deletedCount === 1){
 				res.send(create_success_object(200, {msg: 'Deleted.', data},));
 			} else {
@@ -393,7 +393,7 @@ app.get('/callback', (req: any, res: any): void => {
 							"Content-Type": "application/json"
 						}
 					})
-					.then((response) => {
+					.then((response: { data: { id: any; display_name: any; }; }) => {
 						res.redirect('http://localhost:3000/logged_in/' +
 							querystring.stringify({
 								access_token: access_token,

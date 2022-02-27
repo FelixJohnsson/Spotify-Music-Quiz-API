@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34,7 +35,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
 //@ts-ignore
 var mongoose = require('mongoose');
 var playlist_schema = new mongoose.Schema({
@@ -46,7 +46,7 @@ var playlist_schema = new mongoose.Schema({
     number_of_songs: Number
 });
 var playlist_model = mongoose.model('playlists', playlist_schema);
-var get_recommended = function () { return __awaiter(_this, void 0, void 0, function () {
+var get_recommended = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         return [2 /*return*/, new Promise(function (resolve, reject) {
                 playlist_model.find({}, function (error, success) {
@@ -58,7 +58,7 @@ var get_recommended = function () { return __awaiter(_this, void 0, void 0, func
             })];
     });
 }); };
-var search_recommended = function (URI) { return __awaiter(_this, void 0, void 0, function () {
+var search_recommended = function (URI) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         console.log(URI);
         console.log(typeof URI);
@@ -72,7 +72,7 @@ var search_recommended = function (URI) { return __awaiter(_this, void 0, void 0
             })];
     });
 }); };
-var add_recommended = function (playlist_object) { return __awaiter(_this, void 0, void 0, function () {
+var add_recommended = function (playlist_object) { return __awaiter(void 0, void 0, void 0, function () {
     var new_playlist;
     return __generator(this, function (_a) {
         new_playlist = new playlist_model({
@@ -96,5 +96,5 @@ var add_recommended = function (playlist_object) { return __awaiter(_this, void 
 module.exports = {
     get_recommended: get_recommended,
     search_recommended: search_recommended,
-    add_recommended: add_recommended
+    add_recommended: add_recommended,
 };

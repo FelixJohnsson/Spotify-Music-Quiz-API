@@ -66,7 +66,7 @@ const create_new_room = async (playlist_object:any, display_name:String) => {
             [new_room.songs[i], new_room.songs[j]] = [new_room.songs[j], new_room.songs[i]];
         }
         room_model.find().sort({_id:-1}).limit(1)
-        .then(data => {
+        .then((data: string | any[]) => {
             if(data.length > 0){
                 new_room.id = parseInt(data[0].id) + 1;
             }
@@ -112,7 +112,7 @@ const remove_player = async (room_id:String, id:String) => {
     };
     let filter;
     let update;
-    const rest_of_players = room_object[0].players.filter(user => user.id != id);
+    const rest_of_players = room_object[0].players.filter((user: { id: String; }) => user.id != id);
         if(rest_of_players.length === 0){
             delete_room(room_id);
         } else {

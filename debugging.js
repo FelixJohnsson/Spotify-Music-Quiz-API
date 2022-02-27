@@ -1,8 +1,14 @@
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+"use strict";
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 //CONSOLE FUNCTIONS - DEBUGGING
 var chalk = require('chalk');
 var print_success_status = function (text) {
@@ -39,13 +45,13 @@ function proxiedLog() {
     var line = (((new Error('log'))
         .stack.split('\n')[2] || '…')
         .match(/\(([^)]+)\)/) || [, 'not found'])[1];
-    log.call.apply(log, __spreadArray([console, line + "\n"], args));
+    log.call.apply(log, __spreadArray([console, line + "\n"], args, false));
 }
 console.info = proxiedLog;
 var print_line = function (text) {
     console.info(text);
 };
-module.exports = {
+exports.default = {
     print_success_status: print_success_status,
     print_error_status: print_error_status,
     print_success_login: print_success_login,

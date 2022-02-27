@@ -40,7 +40,7 @@ const print_line = (text:String) => {
 	console.info(text)
 }
 
-module.exports = {
+export default {
     print_success_status,
     print_error_status,
     print_success_login,
