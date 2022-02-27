@@ -26,7 +26,10 @@ mongoose.connect(process.env.MONGO, {
 	.then((res: any) => {
 		debug.print_success_status('Connected to MongoDB.');
 	})
-	.catch((err: any) => debug.print_error_status('Failed to connect to MongoDB.'))
+	.catch((err: any) => {
+		debug.print_error_status('Failed to connect to MongoDB.')
+		debug.print_error_status(err)
+	})
 
 //SERVER -  Express
 const express = require('express');
@@ -109,6 +112,9 @@ io.on('connection', async (socket:any) => {
 	})
 })
 
+app.get('/', (req:any, res:any) => {
+	res.sendFile(__dirname + '/api_docs.html');
+})
 
 app.get('/room/:id', (req:any, res:any) => {
 	res.sendFile(__dirname + '/socket_test.html');

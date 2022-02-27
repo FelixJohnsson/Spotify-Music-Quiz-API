@@ -27,7 +27,8 @@
     "ts-node": "^10.2.1"
   },
   "scripts": {
-    "start": "(tsc) & nodemon server.js",
+    "start": "nodemon server.js",
+    "dev": "tsc -w",
     "test": "mocha -r ts-node/register ./test/test.js"
   }
 }

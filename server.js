@@ -61,7 +61,10 @@ mongoose.connect(process.env.MONGO, {
     .then(function (res) {
     debugging_1.default.print_success_status('Connected to MongoDB.');
 })
-    .catch(function (err) { return debugging_1.default.print_error_status('Failed to connect to MongoDB.'); });
+    .catch(function (err) {
+    debugging_1.default.print_error_status('Failed to connect to MongoDB.');
+    debugging_1.default.print_error_status(err);
+});
 //SERVER -  Express
 var express = require('express');
 var router = express.Router();
@@ -124,6 +127,9 @@ io.on('connection', function (socket) { return __awaiter(void 0, void 0, void 0,
         return [2 /*return*/];
     });
 }); });
+app.get('/', function (req, res) {
+    res.sendFile(__dirname + '/api_docs.html');
+});
 app.get('/room/:id', function (req, res) {
     res.sendFile(__dirname + '/socket_test.html');
 });
