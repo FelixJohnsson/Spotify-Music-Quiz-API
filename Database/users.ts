@@ -1,4 +1,3 @@
-//@ts-ignore
 import mongoose from 'mongoose';
 
 const user_schema = new mongoose.Schema({
@@ -18,9 +17,28 @@ const user_schema = new mongoose.Schema({
     oAuth: String
 })
 
+interface NewUserData {
+    username: string,
+    id: string,
+    socket: '0',
+    current_room: null,
+    latest_connection: string,
+    first_connection: string,
+    played_playlists: [],
+    number_of_badges: 0,
+    badges: [],
+    correct_guesses: 0,
+    incorrect_guesses: 0,
+    rooms_won: 0,
+    rooms_lost: 0,
+    oAuth: string,
+    _id: any,
+    __v: any
+}
+
 const user_model = mongoose.model('users', user_schema);
 
-const init_user = async (id: String, username:String, oAuth:String) => {
+const init_user = async (id: string, username:string, oAuth:string):Promise<NewUserData> => {
     return new Promise((resolve, reject) => {
         const new_user = new user_model({
             username: username,
@@ -39,9 +57,9 @@ const init_user = async (id: String, username:String, oAuth:String) => {
             oAuth: oAuth
         })
     
-        new_user.save(function (error:any, success:any) {
+        new_user.save((error:any, success:any) => {
             if(error) reject(error);
-            if(success) resolve(success);
+            if(success) resolve(success)
         });
     })
 }
@@ -55,7 +73,7 @@ const get_user_by_id = async (id: string) => {
     })
 }
 
-const update_user = async (id:String, type:String, value?: String | Number) => {
+const update_user = async (id:string, type:string, value?: string |number) => {
     let filter;
     let update;
     switch(type){
@@ -147,7 +165,6 @@ const update_user = async (id:String, type:String, value?: String | Number) => {
         })
     }
 }
-
 
 export default {
     init_user, 

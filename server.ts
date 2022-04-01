@@ -1,6 +1,6 @@
 import debug from './debugging'
 
-import DB_users from './Database/users.js';
+import DB_users, { NewUserData } from './Database/users.js';
 import DB_playlists from './Database/playlists.js';
 import DB_rooms from './Database/rooms.js';
 import spotify from './spotify_functions.js';
@@ -18,7 +18,7 @@ import axios from 'axios';
 //DATABASE - MongoDB & Mongoose
 //@ts-ignore
 import mongoose from 'mongoose';
-mongoose.connect(process.env.MONGO, {
+mongoose.connect(process.env.MONGO, { // @TODO
 		useNewUrlParser: true,
 		useUnifiedTopology: true
 	})
@@ -32,7 +32,7 @@ mongoose.connect(process.env.MONGO, {
 
 //SERVER -  Express
 import express from 'express';
-const router = express.Router();
+express.Router();
 const app = require('express')();
 import bodyParser from 'body-parser';
 app.use(express.static("public"))
@@ -48,27 +48,17 @@ const server = app.listen(process.env.PORT, () => {
 	
 });
 
-interface New_user {
-	username: string,
-		id: string,
-		password: string,
-		latest_login_string: string,
-		latest_login_number: number,
-		login_token: string,
-		played_playlists: string[],
-		uuid: string
-}
 interface Error_object {
-	statusCode: Number,
-		error_message: String,
-		content: Object,
+	statusCode: number,
+		error_message: string,
+		content?: Record<string, any>,
 }
 interface Success_object {
-	statusCode: Number,
-		content: Object,
+	statusCode: number,
+	content?: Record<string, any>,
 }
 
-const create_error_object = (statusCode: Number = 400, error_message: String, content ? : any) => {
+const create_error_object = (statusCode: number = 400, error_message: string, content?: Record<string, any>) => {
 	let error_object: Error_object = {
 		statusCode: statusCode,
 		error_message: error_message,
@@ -76,7 +66,7 @@ const create_error_object = (statusCode: Number = 400, error_message: String, co
 	}
 	return error_object;
 }
-const create_success_object = (statusCode: Number = 200, content: any) => {
+const create_success_object = (statusCode: number = 200, content: Record<string, any>) => {
 	let success_object: Success_object = {
 		statusCode: statusCode,
 		content: content
@@ -122,7 +112,7 @@ app.get('/room/:id', (req:any, res:any) => {
 app.post('/add_user', (req: any, res: any) => {
 	if (req.body.username != undefined && req.body.username.length > 0) {
 		DB_users.init_user(req.body.id, req.body.username, uuid_v4())
-			.then((data: { username: any; }) => {
+			.then((data: NewUserData) => {
 				res.send(create_success_object(200, data))
 				debug.print_success_status(`Added user ${data.username}`);
 			})

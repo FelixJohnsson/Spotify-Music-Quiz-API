@@ -20,6 +20,7 @@
     </div>
     <button onclick="fetch_user()">Fetch</button>
 
+    <button onclick="init_user()">Init new user</button>
     <button onclick="post_playlist()">Post playlist</button>
     <button onclick="post_room_win()">Post room win</button>
     <button onclick="post_room_loss()">Post room loss</button>
@@ -117,6 +118,24 @@
         value:  {number: Math.floor(Math.random() * 1000) + 1, name:'A badge!'}
     }
         fetch('http://localhost:5000/update_user', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                fetch_user();
+            })
+    }
+
+    const init_user = () => {
+        let data = {
+        id: `test:${Math.floor(Math.random() * 1000) + 1}`,
+        username: 'felle21a',
+        }
+        fetch('http://localhost:5000/add_user', {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json'

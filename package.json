@@ -20,6 +20,7 @@
     "uuidv4": "^6.2.12"
   },
   "devDependencies": {
+    "@types/mongoose": "^5.11.97",
     "@types/node": "^16.10.2",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
