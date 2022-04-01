@@ -1,5 +1,5 @@
 //@ts-ignore
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const playlist_schema = new mongoose.Schema({
     img_src:String,
@@ -48,7 +48,7 @@ const add_recommended = async (playlist_object:any) => {
     })
 }
 
-module.exports = {
+export default {
     get_recommended,
     search_recommended,
     add_recommended,

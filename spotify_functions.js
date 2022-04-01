@@ -13,6 +13,6 @@
 	return text;
 };
 
-module.exports = {
+export default {
     generateRandomString
 }

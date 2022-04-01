@@ -1,29 +1,28 @@
 import debug from './debugging'
 
-const DB_users = require('./Database/users.js');
-const DB_playlists = require('./Database/playlists.js');
-const DB_rooms = require('./Database/rooms.js');
+import DB_users from './Database/users.js';
+import DB_playlists from './Database/playlists.js';
+import DB_rooms from './Database/rooms.js';
+import spotify from './spotify_functions.js';
 
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 require('dotenv').config();
 
-const querystring = require('querystring');
-const request = require('request');
-const ss = require("string-similarity");
-const {
-	v4: uuid_v4
-} = require('uuid');
-const axios = require('axios');
+import querystring from 'querystring';
+import request from 'request';
+import ss from "string-similarity";
+import { v4 as uuid_v4 } from 'uuid';
+import axios from 'axios';
 
 //DATABASE - MongoDB & Mongoose
 //@ts-ignore
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 mongoose.connect(process.env.MONGO, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true
 	})
-	.then((res: any) => {
+	.then(() => {
 		debug.print_success_status('Connected to MongoDB.');
 	})
 	.catch((err: any) => {
@@ -32,10 +31,10 @@ mongoose.connect(process.env.MONGO, {
 	})
 
 //SERVER -  Express
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 const app = require('express')();
-const bodyParser = require('body-parser');
+import bodyParser from 'body-parser';
 app.use(express.static("public"))
 	.use(cors())
 	.use(cookieParser())
@@ -316,7 +315,6 @@ app.get('/delete_room/:id', async (req:any, res:any) => {
 })
 
 
-const spotify = require('./spotify_functions.js')
 // SPOTIFY - Functions
 const client_id = '94ac88d39834494da4f490e1b0cb0ef2'; // Your client id
 const client_secret = '9b029b88d0364f1590456f0e2f11dd5c'; // Your secret

@@ -1,5 +1,5 @@
 //@ts-ignore
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const user_schema = new mongoose.Schema({
     username: String,
@@ -149,7 +149,7 @@ const update_user = async (id:String, type:String, value?: String | Number) => {
 }
 
 
-module.exports = {
+export default {
     init_user, 
     get_user_by_id,
     update_user

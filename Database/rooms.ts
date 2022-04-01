@@ -1,5 +1,5 @@
 //@ts-ignore
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const room_schema = new mongoose.Schema({
     id:String,
@@ -178,7 +178,7 @@ const update_room = (id:String, type:String, value:String) => {
 }
 
 
-module.exports = {
+export default {
     create_new_room,
     delete_room,
     get_room,
