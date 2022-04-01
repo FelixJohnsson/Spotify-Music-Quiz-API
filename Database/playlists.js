@@ -12,7 +12,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-//@ts-ignore
 const mongoose_1 = __importDefault(require("mongoose"));
 const playlist_schema = new mongoose_1.default.Schema({
     img_src: String,

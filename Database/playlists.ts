@@ -1,4 +1,3 @@
-//@ts-ignore
 import mongoose from 'mongoose';
 
 const playlist_schema = new mongoose.Schema({
@@ -9,9 +8,18 @@ const playlist_schema = new mongoose.Schema({
     number_of_plays: Number,
     number_of_songs: Number
 })
+
+export interface Playlist_data {
+    img_src:string,
+    title:string,
+    description:string,
+    URI:string,
+    number_of_plays: number,
+    number_of_songs: number
+}
 const playlist_model = mongoose.model('playlists', playlist_schema);
 
-const get_recommended = async () => {
+const get_recommended = async (): Promise<Playlist_data[]> => {
     return new Promise((resolve, reject) => {
         playlist_model.find({},  (error: any, success:any) => {
             if(error) reject(error);

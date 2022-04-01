@@ -23,23 +23,24 @@ const room_schema = new mongoose.Schema({
 })
 
 interface User {
-    id:String,
-    username:String,
+    id: string,
+    username: string,
     latest_connection: Date,
     first_connection: Date,
-    played_playlists: [String],
-    number_of_badges: Number,
-    badges: [String],
-    correct_guesses: Number,
-    incorrect_guesses: Number,
-    rooms_won: Number,
-    rooms_lost: Number,
-    oAuth: String
+    played_playlists: string[],
+    number_of_badges: number,
+    badges: string[],
+    correct_guesses: number,
+    incorrect_guesses: number,
+    rooms_won: number,
+    rooms_lost: number,
+    oAuth: string
 }
 
 const room_model = mongoose.model('rooms', room_schema);
 
-const create_new_room = async (playlist_object:any, display_name:String) => {
+const create_new_room = async (playlist_object: any, display_name: string) => {
+    console.log(playlist_object, display_name)
     return new Promise((resolve, reject) => {
         const new_room = new room_model({
             id:1,
@@ -127,7 +128,7 @@ const remove_player = async (room_id:String, id:String) => {
     })
 }
 
-const update_room = (id:String, type:String, value:String) => {
+const update_room = (id:string, type:string, value:string) => {
     switch(type){
         case 'Increment room':
             return new Promise((resolve, reject) => {

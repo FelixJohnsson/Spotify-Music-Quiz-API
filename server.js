@@ -109,6 +109,7 @@ app.post('/add_user', (req, res) => {
         });
     }
     else {
+        res.status(400);
         res.send(create_error_object(400, "Couldn't add user, insufficient data received."));
         debugging_1.default.print_error_status(`Failed to add user.`);
     }
@@ -117,7 +118,8 @@ app.get('/get_user/:id', (req, res) => {
     users_js_1.default.get_user_by_id(req.params.id)
         .then((data) => {
         if (data.length === 0) {
-            res.send(create_error_object(400, "Couldn't find that user."));
+            res.status(404);
+            res.send(create_error_object(404, "Couldn't find that user."));
         }
         else {
             res.send(create_success_object(200, data[0]));
@@ -149,6 +151,7 @@ app.post('/update_user', (req, res) => {
             res.send(create_success_object(200, data));
         })
             .catch((err) => {
+            res.status(400);
             res.send(create_error_object(400, 'Error', err));
         });
     }
@@ -162,6 +165,7 @@ app.get('/get_recommended', (req, res) => {
         res.send(create_success_object(200, data));
     })
         .catch((err) => {
+        res.status(400);
         res.send(create_error_object(400, "Can't find recommended playlists.", err));
     });
 });

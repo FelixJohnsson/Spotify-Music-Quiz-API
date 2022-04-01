@@ -17,7 +17,7 @@ const user_schema = new mongoose.Schema({
     oAuth: String
 })
 
-interface NewUserData {
+export interface NewUserData {
     username: string,
     id: string,
     socket: '0',
@@ -58,17 +58,19 @@ const init_user = async (id: string, username:string, oAuth:string):Promise<NewU
         })
     
         new_user.save((error:any, success:any) => {
-            if(error) reject(error);
+            if(error) reject(400);
             if(success) resolve(success)
         });
     })
 }
 
-const get_user_by_id = async (id: string) => {
+const get_user_by_id = async (id: string):Promise<NewUserData[]> => {
     return new Promise((resolve, reject) => {
         user_model.find({id:id}, (error:any, success:any) => {
             if(error) reject(404);
-            if(success) resolve(success);
+            if(success) {
+                resolve(success);
+            }
         })
     })
 }
@@ -81,6 +83,7 @@ const update_user = async (id:string, type:string, value?: string |number) => {
             return new Promise((resolve, reject) => {
                 user_model.deleteOne({ id: id }, (error: any, success:any) => {
                     if(error) reject(error);
+                    if(success === null) reject(404) // @TODO ERROR DOESNT EXIST, SUCCESS AND ERROR IS NULL IF NOT FOUND
                     if(success) resolve(success);
                   });
             })
@@ -90,6 +93,7 @@ const update_user = async (id:string, type:string, value?: string |number) => {
                 update = { $set:{latest_connection: Date.now(), oAuth: value}};
                 user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
                     if(error) reject(error);
+                    if(success === null) reject(404) // @TODO ERROR DOESNT EXIST, SUCCESS AND ERROR IS NULL IF NOT FOUND
                     if(success) resolve(success);
                 }); 
             })
@@ -100,6 +104,7 @@ const update_user = async (id:string, type:string, value?: string |number) => {
     
             user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
                 if(error) reject(error);
+                if(success === null) reject(404) // @TODO ERROR DOESNT EXIST, SUCCESS AND ERROR IS NULL IF NOT FOUND
                 if(success) resolve(success);
             }); 
         })
@@ -110,6 +115,7 @@ const update_user = async (id:string, type:string, value?: string |number) => {
             
             user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
                 if(error) reject(error);
+                if(success === null) reject(404) // @TODO ERROR DOESNT EXIST, SUCCESS AND ERROR IS NULL IF NOT FOUND
                 if(success) resolve(success);
             }); 
         })
@@ -120,6 +126,7 @@ const update_user = async (id:string, type:string, value?: string |number) => {
     
             user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
                 if(error) reject(error);
+                if(success === null) reject(404) // @TODO ERROR DOESNT EXIST, SUCCESS AND ERROR IS NULL IF NOT FOUND
                 if(success) resolve(success);
             }); 
         })
@@ -130,6 +137,7 @@ const update_user = async (id:string, type:string, value?: string |number) => {
     
             user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
                 if(error) reject(error);
+                if(success === null) reject(404) // @TODO ERROR DOESNT EXIST, SUCCESS AND ERROR IS NULL IF NOT FOUND
                 if(success) resolve(success);
             }); 
         })
@@ -140,16 +148,19 @@ const update_user = async (id:string, type:string, value?: string |number) => {
     
             user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
                 if(error) reject(error);
+                if(success === null) reject(404) // @TODO ERROR DOESNT EXIST, SUCCESS AND ERROR IS NULL IF NOT FOUND
                 if(success) resolve(success);
             }); 
         })
         case 'new_badge':
             return new Promise((resolve, reject) => {
-            filter = { id: id };
+            filter = { id: 'id' };
             update = { $inc: {number_of_badges: 1}, $push: {badges: value}};
     
-            user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
-                if(error) reject(error);
+            user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:true }, (error:any, success:any) => {
+                if(error) reject(404);
+                if(success === null) reject(404) // @TODO ERROR DOESNT EXIST, SUCCESS AND ERROR IS NULL IF NOT FOUND
+
                 if(success) resolve(success);
             }); 
         })
@@ -160,6 +171,7 @@ const update_user = async (id:string, type:string, value?: string |number) => {
     
             user_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
                 if(error) reject(error);
+                if(success === null) reject(404) // @TODO ERROR DOESNT EXIST, SUCCESS AND ERROR IS NULL IF NOT FOUND
                 if(success) resolve(success);
             }); 
         })

@@ -36,6 +36,7 @@ const room_schema = new mongoose_1.default.Schema({
 });
 const room_model = mongoose_1.default.model('rooms', room_schema);
 const create_new_room = (playlist_object, display_name) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(playlist_object, display_name);
     return new Promise((resolve, reject) => {
         const new_room = new room_model({
             id: 1,

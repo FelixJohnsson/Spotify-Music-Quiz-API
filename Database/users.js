@@ -50,7 +50,7 @@ const init_user = (id, username, oAuth) => __awaiter(void 0, void 0, void 0, fun
         });
         new_user.save((error, success) => {
             if (error)
-                reject(error);
+                reject(400);
             if (success)
                 resolve(success);
         });
@@ -61,8 +61,9 @@ const get_user_by_id = (id) => __awaiter(void 0, void 0, void 0, function* () {
         user_model.find({ id: id }, (error, success) => {
             if (error)
                 reject(404);
-            if (success)
+            if (success) {
                 resolve(success);
+            }
         });
     });
 });
@@ -75,6 +76,8 @@ const update_user = (id, type, value) => __awaiter(void 0, void 0, void 0, funct
                 user_model.deleteOne({ id: id }, (error, success) => {
                     if (error)
                         reject(error);
+                    if (success === null)
+                        reject(404); // @TODO ERROR DOESNT EXIST, SUCCESS AND ERROR IS NULL IF NOT FOUND
                     if (success)
                         resolve(success);
                 });
@@ -86,6 +89,8 @@ const update_user = (id, type, value) => __awaiter(void 0, void 0, void 0, funct
                 user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, (error, success) => {
                     if (error)
                         reject(error);
+                    if (success === null)
+                        reject(404); // @TODO ERROR DOESNT EXIST, SUCCESS AND ERROR IS NULL IF NOT FOUND
                     if (success)
                         resolve(success);
                 });
@@ -97,6 +102,8 @@ const update_user = (id, type, value) => __awaiter(void 0, void 0, void 0, funct
                 user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, (error, success) => {
                     if (error)
                         reject(error);
+                    if (success === null)
+                        reject(404); // @TODO ERROR DOESNT EXIST, SUCCESS AND ERROR IS NULL IF NOT FOUND
                     if (success)
                         resolve(success);
                 });
@@ -108,6 +115,8 @@ const update_user = (id, type, value) => __awaiter(void 0, void 0, void 0, funct
                 user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, (error, success) => {
                     if (error)
                         reject(error);
+                    if (success === null)
+                        reject(404); // @TODO ERROR DOESNT EXIST, SUCCESS AND ERROR IS NULL IF NOT FOUND
                     if (success)
                         resolve(success);
                 });
@@ -119,6 +128,8 @@ const update_user = (id, type, value) => __awaiter(void 0, void 0, void 0, funct
                 user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, (error, success) => {
                     if (error)
                         reject(error);
+                    if (success === null)
+                        reject(404); // @TODO ERROR DOESNT EXIST, SUCCESS AND ERROR IS NULL IF NOT FOUND
                     if (success)
                         resolve(success);
                 });
@@ -130,6 +141,8 @@ const update_user = (id, type, value) => __awaiter(void 0, void 0, void 0, funct
                 user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, (error, success) => {
                     if (error)
                         reject(error);
+                    if (success === null)
+                        reject(404); // @TODO ERROR DOESNT EXIST, SUCCESS AND ERROR IS NULL IF NOT FOUND
                     if (success)
                         resolve(success);
                 });
@@ -141,17 +154,21 @@ const update_user = (id, type, value) => __awaiter(void 0, void 0, void 0, funct
                 user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, (error, success) => {
                     if (error)
                         reject(error);
+                    if (success === null)
+                        reject(404); // @TODO ERROR DOESNT EXIST, SUCCESS AND ERROR IS NULL IF NOT FOUND
                     if (success)
                         resolve(success);
                 });
             });
         case 'new_badge':
             return new Promise((resolve, reject) => {
-                filter = { id: id };
+                filter = { id: 'id' };
                 update = { $inc: { number_of_badges: 1 }, $push: { badges: value } };
-                user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, (error, success) => {
+                user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: true }, (error, success) => {
                     if (error)
-                        reject(error);
+                        reject(404);
+                    if (success === null)
+                        reject(404); // @TODO ERROR DOESNT EXIST, SUCCESS AND ERROR IS NULL IF NOT FOUND
                     if (success)
                         resolve(success);
                 });
@@ -163,6 +180,8 @@ const update_user = (id, type, value) => __awaiter(void 0, void 0, void 0, funct
                 user_model.findOneAndUpdate(filter, update, { useFindAndModify: false, returnOriginal: false }, (error, success) => {
                     if (error)
                         reject(error);
+                    if (success === null)
+                        reject(404); // @TODO ERROR DOESNT EXIST, SUCCESS AND ERROR IS NULL IF NOT FOUND
                     if (success)
                         resolve(success);
                 });

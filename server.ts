@@ -1,7 +1,7 @@
 import debug from './debugging'
 
 import DB_users, { NewUserData } from './Database/users.js';
-import DB_playlists from './Database/playlists.js';
+import DB_playlists, { Playlist_data } from './Database/playlists.js';
 import DB_rooms from './Database/rooms.js';
 import spotify from './spotify_functions.js';
 
@@ -51,14 +51,14 @@ const server = app.listen(process.env.PORT, () => {
 interface Error_object {
 	statusCode: number,
 		error_message: string,
-		content?: Record<string, any>,
+		content?: Record<string, any> | string | number,
 }
 interface Success_object {
 	statusCode: number,
-	content?: Record<string, any>,
+	content?: Record<string, any> | string | number,
 }
 
-const create_error_object = (statusCode: number = 400, error_message: string, content?: Record<string, any>) => {
+const create_error_object = (statusCode = 400, error_message: string, content?: Record<string, any> | string | number) => {
 	let error_object: Error_object = {
 		statusCode: statusCode,
 		error_message: error_message,
@@ -66,7 +66,7 @@ const create_error_object = (statusCode: number = 400, error_message: string, co
 	}
 	return error_object;
 }
-const create_success_object = (statusCode: number = 200, content: Record<string, any>) => {
+const create_success_object = (statusCode = 200, content?: Record<string, any> | string | number) => {
 	let success_object: Success_object = {
 		statusCode: statusCode,
 		content: content
@@ -79,7 +79,7 @@ const options = {
     methods: ["GET", "POST"],
     allowedHeaders: ["room_id"],
     credentials: true
-  }};
+}};
 const io = require('socket.io')(server, options);
 
 io.on('connection', async (socket:any) => {
@@ -117,6 +117,7 @@ app.post('/add_user', (req: any, res: any) => {
 				debug.print_success_status(`Added user ${data.username}`);
 			})
 	} else {
+		res.status(400)
 		res.send(create_error_object(400, "Couldn't add user, insufficient data received."));
 		debug.print_error_status(`Failed to add user.`);
 	}
@@ -124,9 +125,10 @@ app.post('/add_user', (req: any, res: any) => {
 
 app.get('/get_user/:id', (req: any, res: any) => {
 	DB_users.get_user_by_id(req.params.id)
-		.then((data: string | any[]) => {
+		.then((data: NewUserData[]) => {
 			if(data.length === 0){
-				res.send(create_error_object(400, "Couldn't find that user."));
+				res.status(404)
+				res.send(create_error_object(404, "Couldn't find that user."));
 			} else {
 				res.send(create_success_object(200, data[0]))
 				debug.print_general_status(`Found user ${req.params.id}`);
@@ -158,7 +160,8 @@ app.post('/update_user', (req: any, res: any) => {
 			.then((data: any) => {
 				res.send(create_success_object(200, data))
 			})
-			.catch((err: any) => {
+			.catch((err: 404) => {
+				res.status(400)
 				res.send(create_error_object(400, 'Error', err))
 			})
 	} else {
@@ -167,12 +170,12 @@ app.post('/update_user', (req: any, res: any) => {
 });
 
 app.get('/get_recommended', (req: any, res: any) => {
-
 	DB_playlists.get_recommended()
-		.then((data: object[]) => {
+		.then((data: Playlist_data[]) => {
 			res.send(create_success_object(200, data))
 		})
 		.catch((err: any) => {
+			res.status(400)
 			res.send(create_error_object(400, "Can't find recommended playlists.", err))
 		})
 })
@@ -181,7 +184,7 @@ app.post('/save_recommended', async (req: any, res: any) => {
 	const URI = req.body.URI;
 	const token = req.body.token;
 	DB_playlists.search_recommended(URI)
-		.then((data: string | any[]) => {
+		.then((data: any) => { // @TODO
 			if (data.length > 0) {
 				res.send(create_error_object(400, "That playlist already exists in recommended."))
 			} else {
