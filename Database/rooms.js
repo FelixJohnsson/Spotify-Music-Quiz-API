@@ -12,7 +12,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-//@ts-ignore
 const mongoose_1 = __importDefault(require("mongoose"));
 const room_schema = new mongoose_1.default.Schema({
     id: String,
@@ -38,7 +37,7 @@ const room_model = mongoose_1.default.model('rooms', room_schema);
 const create_new_room = (playlist_object, display_name) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(playlist_object, display_name);
     return new Promise((resolve, reject) => {
-        const new_room = new room_model({
+        const new_room = {
             id: 1,
             paused: false,
             owner_name: display_name,
@@ -57,7 +56,7 @@ const create_new_room = (playlist_object, display_name) => __awaiter(void 0, voi
             currently_playing_number: 0,
             progress_ms: 0,
             first_connection: Date.now(),
-        });
+        };
         for (let i = new_room.songs.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [new_room.songs[i], new_room.songs[j]] = [new_room.songs[j], new_room.songs[i]];
@@ -67,7 +66,8 @@ const create_new_room = (playlist_object, display_name) => __awaiter(void 0, voi
             if (data.length > 0) {
                 new_room.id = parseInt(data[0].id) + 1;
             }
-            new_room.save((error, success) => {
+            const new_model = new room_model(new_room);
+            new_model.save((error, success) => {
                 if (error)
                     reject(error);
                 if (success)
@@ -108,12 +108,12 @@ const add_player = (id, new_player_object) => {
     });
 };
 const remove_player = (room_id, id) => __awaiter(void 0, void 0, void 0, function* () {
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
         let room_object = yield get_room(room_id);
         if (room_object.length === 0) {
             reject(400);
         }
-        ;
         let filter;
         let update;
         const rest_of_players = room_object[0].players.filter((user) => user.id != id);

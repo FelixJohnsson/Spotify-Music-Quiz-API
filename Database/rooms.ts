@@ -1,4 +1,3 @@
-//@ts-ignore
 import mongoose from 'mongoose';
 
 const room_schema = new mongoose.Schema({
@@ -42,7 +41,7 @@ const room_model = mongoose.model('rooms', room_schema);
 const create_new_room = async (playlist_object: any, display_name: string) => {
     console.log(playlist_object, display_name)
     return new Promise((resolve, reject) => {
-        const new_room = new room_model({
+        const new_room = {
             id:1,
             paused: false,
             owner_name: display_name,
@@ -61,7 +60,7 @@ const create_new_room = async (playlist_object: any, display_name: string) => {
             currently_playing_number: 0,
             progress_ms: 0,
             first_connection: Date.now(),
-        })
+        }
         for (let i = new_room.songs.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [new_room.songs[i], new_room.songs[j]] = [new_room.songs[j], new_room.songs[i]];
@@ -71,7 +70,8 @@ const create_new_room = async (playlist_object: any, display_name: string) => {
             if(data.length > 0){
                 new_room.id = parseInt(data[0].id) + 1;
             }
-            new_room.save((error:any, success:any) => {
+            const new_model = new room_model(new_room);
+            new_model.save((error:any, success:any) => {
                 if (error) reject(error);
                 if (success) resolve(success);
             });
@@ -106,11 +106,12 @@ const add_player = (id:String, new_player_object:User) => {
     })
 }
 const remove_player = async (room_id:String, id:String) => {
-    return new Promise(async (resolve, reject) => {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => { // FIX
     let room_object:any = await get_room(room_id);
     if(room_object.length === 0) {
         reject(400);
-    };
+    }
     let filter;
     let update;
     const rest_of_players = room_object[0].players.filter((user: { id: String; }) => user.id != id);

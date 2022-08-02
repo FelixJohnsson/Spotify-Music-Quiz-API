@@ -1,30 +1,33 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 //CONSOLE FUNCTIONS - DEBUGGING
-const chalk = require('chalk');
+const chalk_1 = __importDefault(require("chalk"));
 const print_success_status = (text) => {
-    console.log(chalk.underline.bgGreen.black(text));
+    console.log(chalk_1.default.underline.bgGreen.black(text));
 };
 const print_error_status = (text) => {
-    console.log(chalk.underline.bgRed.white(text));
+    console.log(chalk_1.default.underline.bgRed.white(text));
 };
 const print_success_login = (text) => {
-    console.log(chalk.underline.bgBlue.black('+') + chalk.underline.bgGreenBright.black(text));
+    console.log(chalk_1.default.underline.bgBlue.black('+') + chalk_1.default.underline.bgGreenBright.black(text));
 };
 const print_error_login = (text) => {
-    console.log(chalk.underline.bgBlue.black('+') + chalk.underline.bgRedBright.black(text));
+    console.log(chalk_1.default.underline.bgBlue.black('+') + chalk_1.default.underline.bgRedBright.black(text));
 };
 const print_general_status = (text) => {
-    console.log(chalk.underline.bgWhite.black(text));
+    console.log(chalk_1.default.underline.bgWhite.black(text));
 };
 const print_connection_established = (text) => {
-    console.log(chalk.underline.bgBlue.black(text));
+    console.log(chalk_1.default.underline.bgBlue.black(text));
 };
 const print_socket_attached = (text) => {
-    console.log(chalk.underline.bgGreen.black('+') + chalk.underline.bgBlue.black(text));
+    console.log(chalk_1.default.underline.bgGreen.black('+') + chalk_1.default.underline.bgBlue.black(text));
 };
 const print_socket_detached = (text) => {
-    console.log(chalk.underline.bgRed.black('-') + chalk.underline.bgRed.black(text));
+    console.log(chalk_1.default.underline.bgRed.black('-') + chalk_1.default.underline.bgRed.black(text));
 };
 const { log } = console;
 function proxiedLog(...args) {

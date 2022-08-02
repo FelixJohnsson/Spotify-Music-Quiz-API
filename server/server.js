@@ -12,25 +12,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const debugging_1 = __importDefault(require("./debugging"));
-const users_js_1 = __importDefault(require("./Database/users.js"));
-const playlists_js_1 = __importDefault(require("./Database/playlists.js"));
-const rooms_js_1 = __importDefault(require("./Database/rooms.js"));
-const spotify_functions_js_1 = __importDefault(require("./spotify_functions.js"));
+const debugging_1 = __importDefault(require("../debugging"));
+const spotify_functions_1 = __importDefault(require("./spotify_functions"));
+const users_1 = __importDefault(require("../database/users"));
+const playlists_1 = __importDefault(require("../database/playlists"));
+const rooms_1 = __importDefault(require("../database/rooms"));
 const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 require('dotenv').config();
 const querystring_1 = __importDefault(require("querystring"));
 const request_1 = __importDefault(require("request"));
+//import ss from "string-similarity";
 const uuid_1 = require("uuid");
 const axios_1 = __importDefault(require("axios"));
 //DATABASE - MongoDB & Mongoose
-//@ts-ignore
 const mongoose_1 = __importDefault(require("mongoose"));
-mongoose_1.default.connect(process.env.MONGO, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+mongoose_1.default.connect(`mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.vl6zz.mongodb.net/?retryWrites=true&w=majority`)
     .then(() => {
     debugging_1.default.print_success_status('Connected to MongoDB.');
 })
@@ -102,7 +99,7 @@ app.get('/room/:id', (req, res) => {
 });
 app.post('/add_user', (req, res) => {
     if (req.body.username != undefined && req.body.username.length > 0) {
-        users_js_1.default.init_user(req.body.id, req.body.username, (0, uuid_1.v4)())
+        users_1.default.init_user(req.body.id, req.body.username, (0, uuid_1.v4)())
             .then((data) => {
             res.send(create_success_object(200, data));
             debugging_1.default.print_success_status(`Added user ${data.username}`);
@@ -115,7 +112,7 @@ app.post('/add_user', (req, res) => {
     }
 });
 app.get('/get_user/:id', (req, res) => {
-    users_js_1.default.get_user_by_id(req.params.id)
+    users_1.default.get_user_by_id(req.params.id)
         .then((data) => {
         if (data.length === 0) {
             res.status(404);
@@ -136,7 +133,7 @@ app.get('/logged_in/:data', (req, res) => {
         username: data[3].split('=')[1],
         oAuth: (0, uuid_1.v4)()
     };
-    users_js_1.default.update_user(user_info.id, 'login', user_info.oAuth);
+    users_1.default.update_user(user_info.id, 'login', user_info.oAuth);
     res.send(create_success_object(200, data));
     debugging_1.default.print_general_status(`Logged in user ${'ADMIN'}`);
 });
@@ -146,7 +143,7 @@ app.post('/update_user', (req, res) => {
         req.body.value = (0, uuid_1.v4)();
     }
     if (array_of_types.includes(req.body.type) && req.body.id.length > 0) {
-        users_js_1.default.update_user(req.body.id, req.body.type, req.body.value)
+        users_1.default.update_user(req.body.id, req.body.type, req.body.value)
             .then((data) => {
             res.send(create_success_object(200, data));
         })
@@ -160,7 +157,7 @@ app.post('/update_user', (req, res) => {
     }
 });
 app.get('/get_recommended', (req, res) => {
-    playlists_js_1.default.get_recommended()
+    playlists_1.default.get_recommended()
         .then((data) => {
         res.send(create_success_object(200, data));
     })
@@ -172,7 +169,7 @@ app.get('/get_recommended', (req, res) => {
 app.post('/save_recommended', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const URI = req.body.URI;
     const token = req.body.token;
-    playlists_js_1.default.search_recommended(URI)
+    playlists_1.default.search_recommended(URI)
         .then((data) => {
         if (data.length > 0) {
             res.send(create_error_object(400, "That playlist already exists in recommended."));
@@ -186,7 +183,7 @@ app.post('/save_recommended', (req, res) => __awaiter(void 0, void 0, void 0, fu
                 }
             })
                 .then((playlist_object) => {
-                playlists_js_1.default.add_recommended(playlist_object.data)
+                playlists_1.default.add_recommended(playlist_object.data)
                     .then((data) => res.send(create_success_object(200, data)));
             })
                 .catch((err) => {
@@ -207,7 +204,7 @@ app.post('/init_new_room', (req, res) => __awaiter(void 0, void 0, void 0, funct
         }
     })
         .then((data) => {
-        rooms_js_1.default.create_new_room(data.data, user_id)
+        rooms_1.default.create_new_room(data.data, user_id)
             .then((data) => {
             res.send(create_success_object(200, data));
         });
@@ -220,7 +217,8 @@ app.post('/update_room', (req, res) => __awaiter(void 0, void 0, void 0, functio
     const room_id = req.body.room_id;
     const type = req.body.type;
     const value = req.body.value;
-    rooms_js_1.default.update_room(room_id, type, value)
+    // @ts-ignore
+    rooms_1.default.update_room(room_id, type, value)
         .then((data) => {
         if (data.length > 0) {
             res.send(create_success_object(200, data[0]));
@@ -233,7 +231,7 @@ app.post('/update_room', (req, res) => __awaiter(void 0, void 0, void 0, functio
 app.post('/remove_player', (req, res) => {
     const user_id = req.body.id;
     const room_id = req.body.room_id;
-    rooms_js_1.default.remove_player(room_id, user_id)
+    rooms_1.default.remove_player(room_id, user_id)
         .then((data) => {
         if (data.length > 0) {
             res.send(create_success_object(200, data[0]));
@@ -247,11 +245,13 @@ app.post('/remove_player', (req, res) => {
 app.post('/add_player', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user_id = req.body.id;
     const room_id = req.body.room_id;
-    const player_object = yield users_js_1.default.get_user_by_id(user_id);
-    const room_object = yield rooms_js_1.default.get_room(room_id);
+    const player_object = yield users_1.default.get_user_by_id(user_id);
+    const room_object = yield rooms_1.default.get_room(room_id);
+    // @ts-ignore
     const in_room = room_object[0].players.find((el) => el.id === user_id);
     if (in_room === undefined) {
-        rooms_js_1.default.add_player(room_id, player_object)
+        // @ts-ignore
+        rooms_1.default.add_player(room_id, player_object)
             .then((data) => {
             if (data.length > 0) {
                 res.send(create_success_object(200, data[0]));
@@ -268,7 +268,7 @@ app.post('/add_player', (req, res) => __awaiter(void 0, void 0, void 0, function
 app.get('/get_room/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const room_id = parseInt(req.params.id);
     if (Number.isInteger(room_id)) {
-        rooms_js_1.default.get_room(req.params.id)
+        rooms_1.default.get_room(req.params.id)
             .then((data) => {
             if (data.length > 0) {
                 res.send(create_success_object(200, data));
@@ -285,7 +285,8 @@ app.get('/get_room/:id', (req, res) => __awaiter(void 0, void 0, void 0, functio
 app.get('/delete_room/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const room_id = parseInt(req.params.id);
     if (Number.isInteger(room_id)) {
-        rooms_js_1.default.delete_room(req.params.id)
+        rooms_1.default.delete_room(req.params.id)
+            // @ts-ignore
             .then((data) => {
             if (data.deletedCount === 1) {
                 res.send(create_success_object(200, { msg: 'Deleted.', data }));
@@ -305,7 +306,7 @@ const client_secret = '9b029b88d0364f1590456f0e2f11dd5c'; // Your secret
 const redirect_uri = 'http://localhost:5000/callback'; // Your redirect uri
 const stateKey = 'spotify_auth_state';
 app.get('/login', function (req, res) {
-    const state = spotify_functions_js_1.default.generateRandomString(16);
+    const state = (0, spotify_functions_1.default)(16);
     res.cookie(stateKey, state);
     // your application requests authorization
     const scope = `playlist-modify-public 

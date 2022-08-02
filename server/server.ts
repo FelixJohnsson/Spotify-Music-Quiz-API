@@ -1,9 +1,10 @@
-import debug from './debugging'
+import debug from '../debugging'
+import { Error_object, Success_object } from '../types/server';
 
-import DB_users, { NewUserData } from './Database/users.js';
-import DB_playlists, { Playlist_data } from './Database/playlists.js';
-import DB_rooms from './Database/rooms.js';
-import spotify from './spotify_functions.js';
+import generateRandomString from './spotify_functions';
+import DB_users, { NewUserData } from '../database/users';
+import DB_playlists, { Playlist_data } from '../database/playlists';
+import DB_rooms from '../database/rooms';
 
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -11,17 +12,13 @@ require('dotenv').config();
 
 import querystring from 'querystring';
 import request from 'request';
-import ss from "string-similarity";
+//import ss from "string-similarity";
 import { v4 as uuid_v4 } from 'uuid';
 import axios from 'axios';
 
 //DATABASE - MongoDB & Mongoose
-//@ts-ignore
 import mongoose from 'mongoose';
-mongoose.connect(process.env.MONGO, { // @TODO
-		useNewUrlParser: true,
-		useUnifiedTopology: true
-	})
+mongoose.connect(`mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.vl6zz.mongodb.net/?retryWrites=true&w=majority`)
 	.then(() => {
 		debug.print_success_status('Connected to MongoDB.');
 	})
@@ -47,16 +44,6 @@ const server = app.listen(process.env.PORT, () => {
 	debug.print_success_status('Connected to: ' + process.env.PORT);
 	
 });
-
-interface Error_object {
-	statusCode: number,
-		error_message: string,
-		content?: Record<string, any> | string | number,
-}
-interface Success_object {
-	statusCode: number,
-	content?: Record<string, any> | string | number,
-}
 
 const create_error_object = (statusCode = 400, error_message: string, content?: Record<string, any> | string | number) => {
 	let error_object: Error_object = {
@@ -216,7 +203,7 @@ app.post('/init_new_room', async (req:any, res:any) => {
 			Accept: "application/json",
 			Authorization: "Bearer " + token,
 			"Content-Type": "application/json"
-		  }
+	}
 	})
 	.then((data: { data: any; }) => {
 		DB_rooms.create_new_room(data.data, user_id)
@@ -233,8 +220,9 @@ app.post('/update_room', async (req:any, res:any) => {
 	const room_id = req.body.room_id;
 	const type = req.body.type;
 	const value = req.body.value;
+	// @ts-ignore
 	DB_rooms.update_room(room_id, type, value)
-	.then((data: string | any[]) => {
+	.then((data: any) => {
 		if(data.length > 0){
 			res.send(create_success_object(200, data[0]));
 		} else {
@@ -247,7 +235,7 @@ app.post('/remove_player', (req:any, res:any) => {
 	const user_id = req.body.id;
 	const room_id = req.body.room_id;
 	DB_rooms.remove_player(room_id, user_id)
-	.then((data: string | any[]) => {
+	.then((data: any) => {
 		if(data.length > 0){
 			res.send(create_success_object(200, data[0]));
 		} else {
@@ -261,10 +249,12 @@ app.post('/add_player', async (req:any, res:any) => {
 	const room_id = req.body.room_id;
 	const player_object = await DB_users.get_user_by_id(user_id);
 	const room_object = await DB_rooms.get_room(room_id);
+	// @ts-ignore
 	const in_room = room_object[0].players.find((el: { id: any; }) => el.id === user_id);
 	if(in_room === undefined){
+		// @ts-ignore
 		DB_rooms.add_player(room_id, player_object)
-		.then((data: string | any[]) => {
+		.then((data: any) => {
 			if(data.length > 0){
 				res.send(create_success_object(200, data[0]));
 			} else {
@@ -280,7 +270,7 @@ app.get('/get_room/:id', async (req:any, res:any) => {
 	const room_id = parseInt(req.params.id);
 	if(Number.isInteger(room_id)){
 		DB_rooms.get_room(req.params.id)
-		.then((data: string | any[]) => {
+		.then((data: any) => {
 			if(data.length > 0){
 				res.send(create_success_object(200, data));
 			} else {
@@ -295,6 +285,7 @@ app.get('/delete_room/:id', async (req:any, res:any) => {
 	const room_id = parseInt(req.params.id);
 	if(Number.isInteger(room_id)){
 		DB_rooms.delete_room(req.params.id)
+		// @ts-ignore
 		.then((data: { deletedCount: number; }) => {
 			if(data.deletedCount === 1){
 				res.send(create_success_object(200, {msg: 'Deleted.', data},));
@@ -316,7 +307,7 @@ const stateKey = 'spotify_auth_state';
 
 app.get('/login', function (req: Request, res: any) {
 
-	const state = spotify.generateRandomString(16);
+	const state = generateRandomString(16);
 	res.cookie(stateKey, state);
 
 	// your application requests authorization

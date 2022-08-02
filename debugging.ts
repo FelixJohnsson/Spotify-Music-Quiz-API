@@ -1,28 +1,28 @@
 //CONSOLE FUNCTIONS - DEBUGGING
-const chalk = require('chalk');
+import chalk from 'chalk'
 
-const print_success_status = (text:String) => {
+const print_success_status = (text: string) => {
 	console.log(chalk.underline.bgGreen.black(text));
 }
-const print_error_status = (text:String) => {
+const print_error_status = (text: string) => {
 	console.log(chalk.underline.bgRed.white(text));
 }
-const print_success_login = (text:String) => {
+const print_success_login = (text: string) => {
 	console.log(chalk.underline.bgBlue.black('+') + chalk.underline.bgGreenBright.black(text));
 }
-const print_error_login = (text:String) => {
+const print_error_login = (text: string) => {
 	console.log(chalk.underline.bgBlue.black('+') + chalk.underline.bgRedBright.black(text));
 }
-const print_general_status = (text:String) => {
+const print_general_status = (text: string) => {
 	console.log(chalk.underline.bgWhite.black(text));
 }
-const print_connection_established = (text:String) => {
+const print_connection_established = (text: string) => {
 	console.log(chalk.underline.bgBlue.black(text));
 }
-const print_socket_attached = (text:String) => {
+const print_socket_attached = (text: string) => {
 	console.log(chalk.underline.bgGreen.black('+') + chalk.underline.bgBlue.black(text));
 }
-const print_socket_detached = (text:String) => {
+const print_socket_detached = (text: string) => {
 	console.log(chalk.underline.bgRed.black('-') + chalk.underline.bgRed.black(text));
 }
 
@@ -36,7 +36,7 @@ function proxiedLog(...args:[]) {
 }
 console.info = proxiedLog;
 
-const print_line = (text:String) => {
+const print_line = (text: string) => {
 	console.info(text)
 }
 
