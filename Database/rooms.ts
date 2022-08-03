@@ -1,10 +1,10 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
 const room_schema = new mongoose.Schema({
-    id:String,
+    id: String,
     paused: Boolean,
     owner_name: String,
-    players:Array,
+    players: Array,
     playlist_uri: String,
     playlist_description: String,
     playlist_image: String,
@@ -22,30 +22,30 @@ const room_schema = new mongoose.Schema({
 })
 
 interface User {
-    id: string,
-    username: string,
-    latest_connection: Date,
-    first_connection: Date,
-    played_playlists: string[],
-    number_of_badges: number,
-    badges: string[],
-    correct_guesses: number,
-    incorrect_guesses: number,
-    rooms_won: number,
-    rooms_lost: number,
+    id: string
+    username: string
+    latest_connection: Date
+    first_connection: Date
+    played_playlists: string[]
+    number_of_badges: number
+    badges: string[]
+    correct_guesses: number
+    incorrect_guesses: number
+    rooms_won: number
+    rooms_lost: number
     oAuth: string
 }
 
-const room_model = mongoose.model('rooms', room_schema);
+const room_model = mongoose.model('rooms', room_schema)
 
 const create_new_room = async (playlist_object: any, display_name: string) => {
     console.log(playlist_object, display_name)
     return new Promise((resolve, reject) => {
         const new_room = {
-            id:1,
+            id: 1,
             paused: false,
             owner_name: display_name,
-            players:[],
+            players: [],
             playlist_uri: playlist_object.URI,
             playlist_description: playlist_object.description,
             playlist_image: playlist_object.images[0].url,
@@ -62,131 +62,160 @@ const create_new_room = async (playlist_object: any, display_name: string) => {
             first_connection: Date.now(),
         }
         for (let i = new_room.songs.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [new_room.songs[i], new_room.songs[j]] = [new_room.songs[j], new_room.songs[i]];
+            const j = Math.floor(Math.random() * (i + 1))
+            ;[new_room.songs[i], new_room.songs[j]] = [new_room.songs[j], new_room.songs[i]]
         }
-        room_model.find().sort({_id:-1}).limit(1)
-        .then((data: string | any[]) => {
-            if(data.length > 0){
-                new_room.id = parseInt(data[0].id) + 1;
-            }
-            const new_model = new room_model(new_room);
-            new_model.save((error:any, success:any) => {
-                if (error) reject(error);
-                if (success) resolve(success);
-            });
+        room_model
+            .find()
+            .sort({ _id: -1 })
+            .limit(1)
+            .then((data: string | any[]) => {
+                if (data.length > 0) {
+                    new_room.id = parseInt(data[0].id) + 1
+                }
+                const new_model = new room_model(new_room)
+                new_model.save((error: any, success: any) => {
+                    if (error) reject(error)
+                    if (success) resolve(success)
+                })
+            })
+    })
+}
+
+const get_room = async (id: String) => {
+    return new Promise((resolve, reject) => {
+        room_model.find({ id: id }, (error: any, success: any) => {
+            if (error) reject(error)
+            if (success) resolve(success)
+        })
+    })
+}
+const delete_room = async (id: String) => {
+    return new Promise((resolve, reject) => {
+        room_model.deleteOne({ id: id }, (error: any, success: any) => {
+            if (error) reject(error)
+            if (success) resolve(success)
         })
     })
 }
 
-const get_room = async (id:String) => {
+const add_player = (id: String, new_player_object: User) => {
     return new Promise((resolve, reject) => {
-        room_model.find({id:id}, (error:any, success:any) => {
-            if (error) reject(error);
-            if (success) resolve(success);
-        })
+        let update = { $push: { players: new_player_object } }
+        room_model.findOneAndUpdate(
+            { id: id },
+            update,
+            { useFindAndModify: false, returnOriginal: false },
+            (error: any, success: any) => {
+                if (error) reject(error)
+                if (success) resolve([success])
+            },
+        )
     })
 }
-const delete_room = async (id:String) => {
-    return new Promise((resolve, reject) => {
-        room_model.deleteOne({ id: id }, (error: any, success:any) => {
-            if(error) reject(error);
-            if(success) resolve(success);
-          });
-    })
-}
-
-const add_player = (id:String, new_player_object:User) => {
-    return new Promise((resolve, reject) => {
-        let update = { $push: {players: new_player_object}};
-        room_model.findOneAndUpdate({ id: id }, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
-            if(error) reject(error);
-            if(success) resolve([success]);
-        }); 
-    })
-}
-const remove_player = async (room_id:String, id:String) => {
+const remove_player = async (room_id: String, id: String) => {
     // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => { // FIX
-    let room_object:any = await get_room(room_id);
-    if(room_object.length === 0) {
-        reject(400);
-    }
-    let filter;
-    let update;
-    const rest_of_players = room_object[0].players.filter((user: { id: String; }) => user.id != id);
-        if(rest_of_players.length === 0){
-            delete_room(room_id);
+    return new Promise(async (resolve, reject) => {
+        // FIX
+        let room_object: any = await get_room(room_id)
+        if (room_object.length === 0) {
+            reject(400)
+        }
+        let filter
+        let update
+        const rest_of_players = room_object[0].players.filter((user: { id: String }) => user.id != id)
+        if (rest_of_players.length === 0) {
+            delete_room(room_id)
         } else {
-            filter = { id: room_id };
-            update = { $set: {"players": rest_of_players}};
+            filter = { id: room_id }
+            update = { $set: { players: rest_of_players } }
         }
 
-        room_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
-            if(error) reject(error);
-            if(success) resolve([success]);
-        }); 
+        room_model.findOneAndUpdate(
+            filter,
+            update,
+            { useFindAndModify: false, returnOriginal: false },
+            (error: any, success: any) => {
+                if (error) reject(error)
+                if (success) resolve([success])
+            },
+        )
     })
 }
 
-const update_room = (id:string, type:string, value:string) => {
-    switch(type){
+const update_room = (id: string, type: string, value: string) => {
+    switch (type) {
         case 'Increment room':
             return new Promise((resolve, reject) => {
-                get_room(id)
-                .then((room_object:any) => {
-                    let filter = { id: id };
-                    let update = { 
-                        $inc: {currently_playing_number: 1},
+                get_room(id).then((room_object: any) => {
+                    let filter = { id: id }
+                    let update = {
+                        $inc: { currently_playing_number: 1 },
                         $set: {
-                            currently_playing_offset:room_object[0].songs[room_object[0].currently_playing_number+1].track.track_number-1,
-                            currently_playing_track: room_object[0].songs[room_object[0].currently_playing_number+1].track.name,
-                            currently_playing_artist:room_object[0].songs[room_object[0].currently_playing_number+1].track.artists[0].name,
-                                                uri:room_object[0].songs[room_object[0].currently_playing_number+1].track.album.uri
-                        }
-                    };
-                    room_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
-                        if (error) reject(error);
-                        if (success) resolve([success]);
-                    }); 
-                })  
+                            currently_playing_offset:
+                                room_object[0].songs[room_object[0].currently_playing_number + 1].track.track_number -
+                                1,
+                            currently_playing_track:
+                                room_object[0].songs[room_object[0].currently_playing_number + 1].track.name,
+                            currently_playing_artist:
+                                room_object[0].songs[room_object[0].currently_playing_number + 1].track.artists[0].name,
+                            uri: room_object[0].songs[room_object[0].currently_playing_number + 1].track.album.uri,
+                        },
+                    }
+                    room_model.findOneAndUpdate(
+                        filter,
+                        update,
+                        { useFindAndModify: false, returnOriginal: false },
+                        (error: any, success: any) => {
+                            if (error) reject(error)
+                            if (success) resolve([success])
+                        },
+                    )
+                })
             })
         case 'Pause':
             return new Promise((resolve, reject) => {
-                let filter = { id: id };
-                let update = { $set:
-                    { 
+                let filter = { id: id }
+                let update = {
+                    $set: {
                         paused: true,
-                        progress_ms: value
-                    }
-                };
-                room_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
-                    if (error) reject(error);
-                    if (success) resolve([success]);
-                }); 
+                        progress_ms: value,
+                    },
+                }
+                room_model.findOneAndUpdate(
+                    filter,
+                    update,
+                    { useFindAndModify: false, returnOriginal: false },
+                    (error: any, success: any) => {
+                        if (error) reject(error)
+                        if (success) resolve([success])
+                    },
+                )
             })
         case 'Unpause':
             return new Promise((resolve, reject) => {
-                let filter = { id: id };
-                let update = { $set:
-                    {paused: false}
-                };
-                room_model.findOneAndUpdate(filter, update, {useFindAndModify: false, returnOriginal:false}, (error:any, success:any) => {
-                    if (error) reject(error);
-                    if (success) resolve([success]);
-                }); 
+                let filter = { id: id }
+                let update = { $set: { paused: false } }
+                room_model.findOneAndUpdate(
+                    filter,
+                    update,
+                    { useFindAndModify: false, returnOriginal: false },
+                    (error: any, success: any) => {
+                        if (error) reject(error)
+                        if (success) resolve([success])
+                    },
+                )
             })
     }
 }
-
 
 export default {
     create_new_room,
     delete_room,
     get_room,
-      
+
     add_player,
     remove_player,
 
-    update_room
+    update_room,
 }
