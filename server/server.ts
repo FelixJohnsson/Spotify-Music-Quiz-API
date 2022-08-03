@@ -13,18 +13,20 @@ import DB_users, { NewUserData } from '../database/users'
 import DB_playlists, { Playlist_data } from '../database/playlists'
 import DB_rooms from '../database/rooms'
 
+import mongoose from 'mongoose'
+import express from 'express'
+import bodyParser from 'body-parser'
+
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 require('dotenv').config()
 
 import querystring from 'querystring'
 import request from 'request'
-//import ss from "string-similarity"
 import { v4 as uuid_v4 } from 'uuid'
 import axios from 'axios'
 
 //DATABASE - MongoDB & Mongoose
-import mongoose from 'mongoose'
 mongoose
     .connect(
         `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.vl6zz.mongodb.net/?retryWrites=true&w=majority`,
@@ -38,10 +40,8 @@ mongoose
     })
 
 //SERVER -  Express
-import express from 'express'
 express.Router()
 const app = require('express')()
-import bodyParser from 'body-parser'
 app.use(express.static('public'))
     .use(cors())
     .use(cookieParser())
@@ -99,7 +99,6 @@ io.on('connection', async (socket: any) => {
             msg: object.msg,
             uuid: uuid_v4(),
         }
-        console.log('send message')
         io.to(room).emit('msg', newObject)
     })
 })
