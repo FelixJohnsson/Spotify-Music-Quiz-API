@@ -1,4 +1,11 @@
-import debug from '../debugging'
+import {
+    print_success_status,
+    print_error_status,
+    print_connection_established,
+    print_general_status,
+    print_success_login,
+    print_error_login,
+} from '../debugging'
 import { Error_object, Success_object } from '../types/server'
 
 import generateRandomString from './spotify_functions'
@@ -23,11 +30,11 @@ mongoose
         `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.vl6zz.mongodb.net/?retryWrites=true&w=majority`,
     )
     .then(() => {
-        debug.print_success_status('Connected to MongoDB.')
+        print_success_status('Connected to MongoDB.')
     })
     .catch((err: any) => {
-        debug.print_error_status('Failed to connect to MongoDB.')
-        debug.print_error_status(err)
+        print_error_status('Failed to connect to MongoDB.')
+        print_error_status(err)
     })
 
 //SERVER -  Express
@@ -46,7 +53,7 @@ app.use(express.static('public'))
     .use(bodyParser.json())
 
 const server = app.listen(process.env.PORT, () => {
-    debug.print_success_status('Connected to: ' + process.env.PORT)
+    print_success_status('Connected to: ' + process.env.PORT)
 })
 
 const create_error_object = (
@@ -81,7 +88,7 @@ const io = require('socket.io')(server, options)
 io.on('connection', async (socket: any) => {
     const room: string = socket.handshake.headers['room_id']
     socket.join(room)
-    debug.print_connection_established('CONNECTION in ROOM ' + room)
+    print_connection_established('CONNECTION in ROOM ' + room)
 
     socket.on('Display name', (display_name: any) => {
         console.log(`Connected with name: ${display_name}`)
@@ -109,12 +116,12 @@ app.post('/add_user', (req: any, res: any) => {
     if (req.body.username != undefined && req.body.username.length > 0) {
         DB_users.init_user(req.body.id, req.body.username, uuid_v4()).then((data: NewUserData) => {
             res.send(create_success_object(200, data))
-            debug.print_success_status(`Added user ${data.username}`)
+            print_success_status(`Added user ${data.username}`)
         })
     } else {
         res.status(400)
         res.send(create_error_object(400, "Couldn't add user, insufficient data received."))
-        debug.print_error_status(`Failed to add user.`)
+        print_error_status(`Failed to add user.`)
     }
 })
 
@@ -125,7 +132,7 @@ app.get('/get_user/:id', (req: any, res: any) => {
             res.send(create_error_object(404, "Couldn't find that user."))
         } else {
             res.send(create_success_object(200, data[0]))
-            debug.print_general_status(`Found user ${req.params.id}`)
+            print_general_status(`Found user ${req.params.id}`)
         }
     })
 })
@@ -141,7 +148,7 @@ app.get('/logged_in/:data', (req: any, res: any) => {
     }
     DB_users.update_user(user_info.id, 'login', user_info.oAuth)
     res.send(create_success_object(200, data))
-    debug.print_general_status(`Logged in user ${'ADMIN'}`)
+    print_general_status(`Logged in user ${'ADMIN'}`)
 })
 
 app.post('/update_user', (req: any, res: any) => {
@@ -405,9 +412,9 @@ app.get('/callback', (req: any, res: any): void => {
                                     username: response.data.display_name,
                                 }),
                         )
-                        debug.print_success_login('User successfully logged in')
+                        print_success_login('User successfully logged in')
                     })
-                    .catch(() => debug.print_error_login('User unsuccessfully logged in'))
+                    .catch(() => print_error_login('User unsuccessfully logged in'))
             } else {
                 res.redirect(
                     '/#' +
@@ -415,7 +422,7 @@ app.get('/callback', (req: any, res: any): void => {
                             error: 'invalid_token',
                         }),
                 )
-                debug.print_error_login('User unsuccessfully logged in')
+                print_error_login('User unsuccessfully logged in')
             }
         })
     }

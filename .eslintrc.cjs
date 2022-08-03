@@ -22,4 +22,4 @@ module.exports = {
         'no-sparse-arrays': 'off',
         'require-yield': 'off',
     },
-};
+}
