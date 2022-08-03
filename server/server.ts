@@ -5,7 +5,7 @@ import {
     print_general_status,
     print_success_login,
     print_error_login,
-} from '../debugging'
+} from './debugging'
 import { Error_object, Success_object } from '../types/server'
 
 import generateRandomString from './spotify_functions'
