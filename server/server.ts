@@ -29,7 +29,7 @@ import axios from 'axios'
 //DATABASE - MongoDB & Mongoose
 mongoose
     .connect(
-        `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.vl6zz.mongodb.net/?retryWrites=true&w=majority`,
+        `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.${process.env.MONGO_CLUSTER_ID}.mongodb.net/?retryWrites=true&w=majority`,
     )
     .then(() => {
         print_success_status('Connected to MongoDB.')
